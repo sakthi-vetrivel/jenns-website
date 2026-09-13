@@ -4,7 +4,7 @@ import { SIZES, dims } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Notebooks · Jenn",
-  description: "Six leathers, two sizes, one notebook made by hand.",
+  description: "Ten leathers, three sizes, one notebook made by hand.",
 };
 
 export default function Notebooks() {
