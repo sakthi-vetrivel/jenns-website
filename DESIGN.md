@@ -26,8 +26,8 @@ typography:
   display:
     fontFamily: "'Young Serif', Georgia, serif"
     fontWeight: 400
-    fontSize: clamp(2.75rem, 7.5vw, 7.5rem)
-    lineHeight: 0.95
+    fontSize: clamp(2rem, 5.6vw, 6rem)
+    lineHeight: 0.98
     letterSpacing: -0.02em
   heading:
     fontFamily: "'Young Serif', Georgia, serif"
@@ -168,7 +168,7 @@ Type comes from the object's world: a notebook, a brass stamp, a receipt.
 
 Loading: Google Fonts, one `<link>` with `display=swap`, families `Young+Serif`, `Source+Serif+4:opsz,wght@8..60,400;8..60,500`, `Courier+Prime:wght@400;700`. Preconnect to fonts.gstatic.com. Fallback stack is Georgia so a slow load still reads as a book.
 
-Scale: display is a `clamp` from 44px on a phone to 120px on desktop; heading from 28px to 48px; body 17px; label 12px; mono 13px. Levels differ by more than a weight. Nothing sits within a step of body size.
+Scale: display is a `clamp` from 32px on a phone to 96px on desktop; heading from 28px to 48px; body 17px; label 12px; mono 13px. Levels differ by more than a weight. Nothing sits within a step of body size.
 
 No exceptions were made to the overused list. EB Garamond was rejected because Louise Carmen uses it and copying the reference is not a design.
 

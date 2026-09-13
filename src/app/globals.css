@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+/* Tokens from DESIGN.md. Do not add colors here without updating DESIGN.md. */
+:root {
+  --linen: #f1ece2;
+  --paper: #f9f6ef;
+  --suede: #e3dacb;
+  --ink: #1c1f2b;
+  --graphite: #6b675e;
+  --pen: #2f4390;
+  --pen-hover: #243677;
+  --rule: #cfc6b3;
+  --moss: #4b6b4a;
+  --ochre: #a8772b;
+  --oxblood: #8c2f2f;
+}
+
+@theme inline {
+  --color-linen: var(--linen);
+  --color-paper: var(--paper);
+  --color-suede: var(--suede);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-pen: var(--pen);
+  --color-pen-hover: var(--pen-hover);
+  --color-rule: var(--rule);
+  --color-moss: var(--moss);
+  --color-ochre: var(--ochre);
+  --color-oxblood: var(--oxblood);
+
+  --font-display: var(--font-young-serif), Georgia, serif;
+  --font-body: var(--font-source-serif), Georgia, serif;
+  --font-mono: var(--font-courier-prime), "Courier New", monospace;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  --spacing-3xl: 6rem;
+  --spacing-4xl: 10rem;
+}
+
+html {
+  color-scheme: light only;
+}
+
+body {
+  background: var(--linen);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Type roles */
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 5.6vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+.t-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.75rem, 3.5vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.t-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hairline {
+  border-color: var(--rule);
+}
+
+/* Links: pen blue, underline on hover/focus only */
+.link {
+  color: var(--pen);
+  text-decoration: none;
+}
+.link:hover,
+.link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Primary button: the one filled element on a screen */
+.btn-primary {
+  background: var(--pen);
+  color: var(--paper);
+  border-radius: var(--radius-sm);
+  padding: 14px 28px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color 150ms ease-out, transform 50ms ease-out;
+}
+.btn-primary:hover { background: var(--pen-hover); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:disabled { opacity: 0.4; }
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.link:focus-visible,
+.swatch:focus-visible,
+.input:focus-visible {
+  outline: 2px solid var(--pen);
+  outline-offset: 3px;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 13px 27px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.input {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  padding: 12px 14px;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: border-color 150ms ease-out;
+}
+.input::placeholder {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--graphite);
+}
+.input:focus { border-color: var(--pen); outline: none; }
+.input[aria-invalid="true"] { border-color: var(--oxblood); }
+
+/* Swatches: 1px transparent border, selected ring floats 3px off */
+.swatch {
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  outline: 1px solid transparent;
+  outline-offset: 3px;
+  transition: none;
+}
+.swatch[aria-pressed="true"],
+.swatch[data-selected="true"] {
+  outline-color: var(--pen);
+}
+
+/* Debossed stamp preview */
+.deboss {
+  color: rgba(28, 31, 43, 0.55);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.35), -1px -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* The stamp: headline settles into the page once on load */
+@keyframes stamp-settle {
+  from {
+    transform: translate(0, 0);
+    text-shadow: none;
+  }
+  to {
+    transform: translate(1px, 1px);
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.45), -1px -1px 0 rgba(28, 31, 43, 0.18);
+  }
+}
+.stamp {
+  animation: stamp-settle 600ms ease-out 150ms both;
+}
+
+/* The page turn: the linen page lifts from its right edge and turns left */
+.page-stage {
+  perspective: 1800px;
+}
+.page {
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 700ms ease-in-out, filter 700ms ease-in-out;
+}
+.page[data-turning="true"] {
+  transform: rotateY(-100deg);
+  filter: brightness(0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp { animation: none; transform: translate(1px, 1px); }
+  .page { transition: opacity 200ms ease-out; }
+  .page[data-turning="true"] { transform: none; filter: none; opacity: 0; }
+}
+
+/* Conditional ticket sections expand */
+.expand {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 250ms ease-out;
+}
+.expand[data-open="true"] { grid-template-rows: 1fr; }
+.expand > div { overflow: hidden; }
+
+/* Total tick */
+@keyframes tick { 0% { color: var(--pen); } 100% { color: var(--ink); } }
+.tick { animation: tick 150ms ease-out; }
