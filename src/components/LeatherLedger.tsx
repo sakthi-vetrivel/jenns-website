@@ -25,6 +25,7 @@ export default function LeatherLedger() {
           src="/images/leathers-fan.jpg"
           alt="Leather traveler's notebooks fanned out on linen."
           fill
+          priority
           sizes="100vw"
           className="object-cover"
         />
