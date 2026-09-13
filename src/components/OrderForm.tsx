@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import QRCode from "qrcode";
+import { useKiosk, KIOSK_CONFIRM_RESET_MS } from "@/lib/kiosk";
 import {
   CHARM_PLACEMENTS,
   CHARM_PRICE,
@@ -81,9 +84,9 @@ export default function OrderForm() {
     .join(" / ");
 
   return (
-    <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] bg-suede">
+    <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[46fr_54fr] xl:grid-cols-[55fr_45fr] bg-suede">
       {/* The cutting table: sticky preview stage */}
-      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] lg:max-h-none overflow-hidden">
+      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden">
         <p className="t-label text-graphite text-center hidden lg:block">
           Jenn&rsquo;s handmade
           <br />
@@ -98,10 +101,23 @@ export default function OrderForm() {
 
       {/* The ticket */}
       <div className="lg:py-8 lg:pr-8">
-        <div className="ticket-edge bg-paper px-5 md:px-10 pt-10 pb-40 lg:pb-32">
+        <div className="ticket-edge bg-paper px-5 md:px-8 xl:px-10 pt-10 pb-40 lg:pb-32">
           <div className="flex items-baseline justify-between pb-6 border-b hairline">
             <span className="t-label text-graphite">Order no.</span>
-            <span className="t-mono">{orderNumber || "JN-______"}</span>
+            <span className="flex items-baseline gap-6">
+              <button
+                type="button"
+                className="link t-mono"
+                onClick={() => {
+                  setOrder(EMPTY_ORDER);
+                  setErrors({});
+                  window.scrollTo({ top: 0 });
+                }}
+              >
+                START OVER
+              </button>
+              <span className="t-mono">{orderNumber || "JN-______"}</span>
+            </span>
           </div>
           <h1 className="t-heading lg:hidden mt-8">Make yours.</h1>
 
@@ -161,7 +177,7 @@ export default function OrderForm() {
               <button
                 key={c.id}
                 type="button"
-                className="swatch !rounded-full w-7 h-7"
+                className="swatch !rounded-full w-10 h-10"
                 style={{ background: c.color }}
                 aria-pressed={order.cord === c.id}
                 aria-label={c.name}
@@ -350,10 +366,10 @@ export default function OrderForm() {
       </div>
 
       {/* Fixed total bar */}
-      <div className="fixed bottom-0 inset-x-0 lg:left-[55%] lg:right-8 bg-paper border-t hairline px-5 md:px-10 py-4 flex items-center justify-between gap-4 z-20">
+      <div className="fixed bottom-0 inset-x-0 lg:left-[46%] xl:left-[55%] lg:right-8 bg-paper border-t hairline px-5 md:px-8 xl:px-10 py-4 flex items-center justify-between gap-4 z-20">
         <p key={total} className="t-mono tick">
           TOTAL ${total}
-          <span className="hidden md:inline"> · PAY BY VENMO AFTER CONFIRMATION</span>
+          <span className="hidden xl:inline"> · PAY BY VENMO AFTER CONFIRMATION</span>
         </p>
         <button type="submit" className="btn-primary" disabled={phase === "submitting"}>
           {phase === "submitting" ? "Reserving…" : "Reserve my notebook"}
@@ -589,7 +605,7 @@ function Choice({
             type="button"
             aria-pressed={selected}
             onClick={() => onChange(o.id)}
-            className={`text-left pb-1 border-b ${selected ? "border-ink" : "border-transparent"}`}
+            className={`text-left min-h-11 py-2 border-b ${selected ? "border-ink" : "border-transparent"}`}
           >
             <span>{o.label}</span>
             {o.hint && <span className="t-mono text-graphite block">{o.hint}</span>}
@@ -619,15 +635,37 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber: string; total: number }) {
+  const router = useRouter();
+  const [qr, setQr] = useState<string>("");
+  const kiosk = useKiosk();
   const leather = LEATHERS.find((l) => l.id === order.leather)?.name ?? "";
   const size = SIZES.find((s) => s.id === order.size)?.name ?? "";
   const cord = CORDS.find((c) => c.id === order.cord)?.name ?? "";
   const note = encodeURIComponent(`${orderNumber} ${leather} ${size}`);
   const venmo = `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${total}&note=${note}`;
+
+  useEffect(() => {
+    let live = true;
+    QRCode.toString(venmo, { type: "svg", margin: 0, color: { dark: "#1C1F2B", light: "#F9F6F1" } })
+      .then((svg) => {
+        if (live) setQr(svg);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [venmo]);
+
+  useEffect(() => {
+    if (!kiosk) return;
+    const t = window.setTimeout(() => router.push("/"), KIOSK_CONFIRM_RESET_MS);
+    return () => window.clearTimeout(t);
+  }, [kiosk, router]);
+
   const lines: [string, string][] = [
     ["LEATHER", leather.toUpperCase()],
     ["SIZE", size.toUpperCase()],
-    ["EDGES", order.roundedEdges ? "ROUNDED" : "SQUARE"],
+    ["CORNERS", order.roundedEdges ? "ROUNDED" : "SQUARE"],
     ["CORD", cord.toUpperCase()],
     [
       "CHARM",
@@ -645,31 +683,63 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
     ["DELIVERY", DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? ""],
   ];
   return (
-    <section className="px-5 md:px-8 py-16 lg:py-24 flex justify-center">
-      <div className="bg-paper border hairline w-full max-w-xl p-8 md:p-12 text-center">
-        <p className="t-mono text-graphite">RESERVED</p>
-        <h1 className="t-heading mt-3">{orderNumber}</h1>
-        <dl className="t-mono text-left mt-10 border-t hairline">
-          {lines.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
-              <dt className="text-graphite">{k}</dt>
-              <dd>{v}</dd>
+    <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
+      <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-start">
+        <div>
+          <p className="t-mono text-graphite">RESERVED</p>
+          <h1 className="t-heading mt-3">{orderNumber}</h1>
+          <dl className="t-mono mt-8 border-t hairline">
+            {lines.map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
+                <dt className="text-graphite">{k}</dt>
+                <dd className="text-right">{v}</dd>
+              </div>
+            ))}
+            <div className="flex justify-between gap-4 py-3">
+              <dt>TOTAL</dt>
+              <dd>${total}</dd>
             </div>
-          ))}
-          <div className="flex justify-between gap-4 py-3">
-            <dt>TOTAL</dt>
-            <dd>${total}</dd>
-          </div>
-        </dl>
-        <p className="mt-10 max-w-prose mx-auto">
-          I&rsquo;ll confirm by hand within a day. Once I do, Venmo{" "}
-          <span className="t-mono">@{VENMO_HANDLE}</span> with the order number
-          in the note and I&rsquo;ll start cutting.
-        </p>
-        <a href={venmo} className="btn-primary inline-block mt-8" target="_blank" rel="noopener">
-          Open Venmo · ${total}
-        </a>
-        <p className="t-mono text-graphite mt-8">I&rsquo;LL WRITE TO {order.email.trim().toUpperCase()}</p>
+          </dl>
+          <p className="mt-8 max-w-prose">
+            {kiosk ? (
+              <>
+                Scan the code to pay <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo, or pay
+                later once Jenn confirms. Either way she&rsquo;ll write to you within a day.
+              </>
+            ) : (
+              <>
+                I&rsquo;ll confirm by hand within a day. Once I do, Venmo{" "}
+                <span className="t-mono">@{VENMO_HANDLE}</span> with the order number in the note and
+                I&rsquo;ll start cutting.
+              </>
+            )}
+          </p>
+          {!kiosk && (
+            <a href={venmo} className="btn-primary inline-block mt-8" target="_blank" rel="noopener">
+              Open Venmo · ${total}
+            </a>
+          )}
+          <p className="t-mono text-graphite mt-8">I&rsquo;LL WRITE TO {order.email.trim().toUpperCase()}</p>
+        </div>
+        <div className="flex flex-col items-center gap-4 md:pt-2">
+          {qr && (
+            <div
+              className="w-44 h-44 md:w-52 md:h-52 [&>svg]:w-full [&>svg]:h-full"
+              aria-label={`Venmo payment QR code for ${orderNumber}`}
+              role="img"
+              dangerouslySetInnerHTML={{ __html: qr }}
+            />
+          )}
+          <p className="t-mono text-graphite text-center">
+            VENMO @{VENMO_HANDLE.toUpperCase()}
+            <br />${total} · {orderNumber}
+          </p>
+          {kiosk && (
+            <button type="button" className="btn-ghost mt-4" onClick={() => router.push("/")}>
+              Next customer
+            </button>
+          )}
+        </div>
       </div>
     </section>
   );

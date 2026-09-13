@@ -30,6 +30,23 @@ npm run dev
 Set `ORDERS_WEBHOOK_URL` and `ORDERS_WEBHOOK_SECRET` in Vercel.
 With no URL set, orders are logged to the server console and still get a number.
 
+## The iPad at the stall
+
+1. On the iPad, open the site in Safari and go to `/kiosk` once. That turns
+   kiosk mode on for that browser and lands on the cover.
+2. Share → Add to Home Screen, then open it from the home screen so it runs
+   full-screen. Optional: Settings → Accessibility → Guided Access to lock
+   the iPad to the app.
+3. Tap "Make yours" to turn the page into the order ticket. After a customer
+   reserves, the confirmation shows a Venmo QR code they scan with their own
+   phone, and a "Next customer" button. Two minutes without a touch returns
+   to the cover on its own.
+4. `/kiosk/off` turns it back into the normal site.
+
+Kiosk mode only changes the confirmation (QR + Next customer) and the idle
+reset. Everyone else who opens the link on a phone or laptop gets the same
+site without those.
+
 ## Deploy
 
 Push to `main`; Vercel builds it. Add the three env vars from `.env.example`

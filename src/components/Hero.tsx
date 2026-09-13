@@ -33,7 +33,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="page-stage relative grid grid-cols-1 lg:grid-cols-12 lg:h-screen lg:min-h-[720px]">
+    <section className="page-stage relative grid grid-cols-1 lg:grid-cols-12 min-h-screen lg:h-screen lg:min-h-[720px]">
       {/* The page: header, headline, link, tag. This is what turns. */}
       <div
         className="page relative z-10 lg:col-span-5 flex flex-col bg-linen px-5 md:px-8 pt-8 pb-8 lg:overflow-hidden"
@@ -41,7 +41,7 @@ export default function Hero() {
       >
         <Nav inset />
 
-        <div className="hero-copy flex-1 flex flex-col justify-center py-16 lg:py-0">
+        <div className="hero-copy flex-1 flex flex-col justify-center py-10 lg:py-0">
           <h1 className="t-display stamp lg:whitespace-nowrap lg:w-max relative z-20">{HEADLINE}</h1>
           <a href="/order" onClick={makeYours} className="link inline-block mt-10 text-[1.25rem] w-max">
             Make yours&nbsp;→
@@ -62,7 +62,7 @@ export default function Hero() {
       </div>
 
       {/* The object. It stays put while the page turns around it. */}
-      <div className="relative lg:col-span-7 min-h-[70vh] lg:min-h-0 order-first lg:order-none overflow-hidden">
+      <div className="relative lg:col-span-7 h-[48vh] md:h-[52vh] lg:h-auto lg:min-h-0 order-first lg:order-none overflow-hidden">
         <Image
           src="/images/hero-tan.jpg"
           alt="A tan leather traveler's notebook with a sage cord, a stone charm, and MAKE IT COUNT stamped down its edge, on raw linen over pine."

@@ -8,7 +8,7 @@ import { LEATHERS } from "@/lib/catalog";
  */
 export default function LeatherLedger() {
   return (
-    <section aria-labelledby="leathers" className="mt-3xl">
+    <section aria-labelledby="leathers" className="mt-section">
       <div className="px-5 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <h2 id="leathers" className="t-heading lg:col-span-5">
           Ten leathers. One notebook.

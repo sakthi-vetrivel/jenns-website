@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="px-5 md:px-8 py-12 border-t hairline mt-3xl">
+    <footer className="px-5 md:px-8 py-12 border-t hairline mt-section">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <p className="max-w-md">
           Every notebook is cut, stitched, and stamped by hand in San Francisco.

@@ -36,8 +36,8 @@
   --radius-md: 4px;
   --radius-lg: 8px;
 
-  --spacing-3xl: 6rem;
-  --spacing-4xl: 10rem;
+  --spacing-section: 6rem;
+  --spacing-section-lg: 10rem;
 }
 
 html {

@@ -129,10 +129,11 @@ components:
 **Product context:** A marketing and custom-order site for Jenn, who hand-makes leather traveler's notebooks (leather cover, elastic cord closure, refillable inserts, optional stone charm, optional hand-stamped initials). Ten leathers today: sand, ochre, saddle, terracotta, cherry, chestnut, plum, green, forest, black. Cords come in every color of the rainbow at no charge. Customers configure an order, submit it, and pay by Venmo; every order lands in a Google Sheet Jenn owns. No cart, no checkout. Static site on Vercel. Buyers are mostly women 25 to 45 who journal, plan, and travel, and who arrive from Instagram on a phone in daylight. Peers: Louise Carmen (Paris, restrained, all-Garamond), Dôen (California, sun-bleached editorial), Chic Sparrow and Foxy Fix (American craft Shopify).
 
 **Mode per surface:**
-- Home: Persuade. One object per viewport, the constraint said out loud, one link.
+- Home: Persuade. The cover is the hero and nothing else: one object, one headline, one link. No footer, nothing to scroll to.
 - Notebooks: Persuade, then Read. One leather per viewport with a note on how it ages.
 - Order: Operate. A long ticket with numbered sections and a live total.
-- Confirmation: Read. A full-page ticket with the Venmo handle, the order number, and one sentence in Jenn's voice.
+- Confirmation: Read. A ticket with the order number, the spec, a Venmo QR code, and one sentence in Jenn's voice.
+- The stall iPad (kiosk): the same site. It rests on the cover; a tap turns the page to the ticket; the confirmation adds a "Next customer" control and the screen returns to the cover after two idle minutes. Touch targets are at least 44px everywhere because this is the primary way orders will be placed.
 
 **Reference sites:** https://www.louisecarmen.com, https://shopdoen.com, https://www.chicsparrow.com
 
@@ -177,7 +178,7 @@ No exceptions were made to the overused list. EB Garamond was rejected because L
 Creative-editorial. A 12-column grid on desktop that every composition breaks asymmetrically: 5/7 for the hero, 55/45 for the order page, 4/8 for text beside a photo. Max content width 1280px with 32px gutters on desktop, 24px on tablet, 20px on phone. Density is low: sections are padded 96px to 160px (`3xl` to `4xl`); the ticket interior uses 16px and 24px. Big step between sections, small step inside a ticket.
 
 - **Home hero:** two panels the full height of the viewport. The photograph owns the right 58%, full-bleed to the top, bottom, and right edges, hard shadow falling left. The left panel is the page: it holds the header (tracked wordmark "JENN" left, "Notebooks / Order" right, a hairline under both), the headline, the link, and the tag above a hairline at the bottom. No header spans the page on the home screen. The headline sits lower-left in three short lines and its last word overlaps the photo edge by a few characters, so type and object touch. One link under it: "Make yours →". Bottom-right, pinned like a luggage tag, a mono block on `surface`: order number, leather, size, `MADE FOR ______`.
-- **Below the fold:** no product grid. One leather per viewport, each a full-bleed photograph with a mono note on how it ages. Between them, one mono receipt block that says the constraint out loud: no cart, no checkout, you tell me what you want, I make it, you Venmo me. Under it the live queue from the sheet.
+- **Below the fold:** nothing. The cover ends with the hero. The leather ledger and the sizes live on /notebooks.
 - **Order page ("the cutting table"):** left 55% is a sticky preview stage on `surface-2` with a large photo of the current configuration and a mono caption. Right 45% is one long scrolling ticket on `surface`, sections numbered in mono with hairline rules between them. A fixed footer strip carries the total in mono on the left and the one primary button on the right. On phones the preview collapses to a sticky 180px strip at the top and the ticket runs full width.
 - **Mobile:** the hero stacks photo above headline, still left-aligned, photo full-bleed. Nav stays two words; no hamburger.
 
@@ -252,6 +253,7 @@ Every component designs its empty, loading, error, and long-content states. A ti
 | 2026-09-12 | Young Serif display (superseded below), Source Serif 4 body, Courier Prime fenced to the ticket | Object-world faces: a stamp, a book, a receipt. Subagent proposed a grotesk body; overruled because the reference world is all-serif and "heirloom" reads better in a book face. |
 | 2026-09-12 | Home hero: mockup A approved; order page: mockup B approved | User: "A is really beautiful." Headline overlaps the photo edge; tag pinned bottom-right. |
 | 2026-09-12 | Page-turn animation on "Make yours" opens the order flow | User request. Replaces the stamp settle as the primary authored moment; stamp kept as secondary. |
+| 2026-09-12 | Cover is the hero only; site doubles as the stall iPad kiosk with QR payment, next-customer reset, idle return; 44px touch targets | User: the iPad at the art fair is the primary order surface; everything below the hero was distracting. |
 | 2026-09-12 | Site brought back to the approved mockups: Libre Caslon Display replaces Young Serif, header moves inside the hero's left panel, photo runs full height, headline knocks out to paper over the photo, order page gets the centered stage, ticket edge, and photo preview. Ten leathers and rainbow cords from Jenn. | User: "the site looks nothing like the mockup." The mockups are the approved truth; tokens re-measured from them. |
 | 2026-09-12 | Prices from Jenn: full $75, passport $50, keychain $15, charm and stamp $5 each, cord free, stamp up to 3 letters | Jenn's message, 2026-09-12. Keychain added as a third size. |
 | 2026-09-12 | Charm section takes a description and an optional photo, stored in Drive | User request. Keeps every order artifact inside Jenn's Google account. |
