@@ -93,13 +93,32 @@ export const DELIVERY = [
 
 export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "JChwang";
 
-/** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with the order number as the memo. */
-export function venmoUrl(amount: number, orderNumber: string): string {
-  return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(orderNumber)}`;
+/**
+ * How to reach Jenn. Override in Vercel with NEXT_PUBLIC_CONTACT_NAME,
+ * NEXT_PUBLIC_CONTACT_EMAIL, NEXT_PUBLIC_INSTAGRAM (handle without the @).
+ * Anything left blank is not shown.
+ */
+export const CONTACT = {
+  name: process.env.NEXT_PUBLIC_CONTACT_NAME ?? "Jennifer Hwang",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "Jennifer.Cj.Hwang@gmail.com",
+  instagram: (process.env.NEXT_PUBLIC_INSTAGRAM ?? "").replace(/^@/, ""),
+};
+
+/** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with `memo` as the note. */
+export function venmoUrl(amount: number, memo: string): string {
+  return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(memo)}`;
 }
+
+/**
+ * How an order leaves the site. "email" opens the customer's mail app with the
+ * whole order filled in (to Jenn, subject, body) and asks them to pay on Venmo;
+ * no server involved. "sheet" posts to /api/order and the Google Sheet issues
+ * the number. Email is the default until the sheet's web app is public.
+ */
+export const ORDER_MODE: "email" | "sheet" = process.env.NEXT_PUBLIC_ORDER_MODE === "sheet" ? "sheet" : "email";
 
 /** Static for now; later read from the same Google Sheet the orders land in. */
 export const QUEUE = {
-  nowMaking: "0141",
+  nowMaking: "141",
   nextOpenSlot: "3 Oct",
 };

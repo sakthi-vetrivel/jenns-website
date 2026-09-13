@@ -59,7 +59,7 @@ export default function Hero() {
 
         <div className="border-t hairline pt-6">
           <p className="t-mono text-right leading-relaxed">
-            Nº 0142
+            Nº 142
             <br />
             CHESTNUT VEG-TAN
             <br />

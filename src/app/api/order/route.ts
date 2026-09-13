@@ -1,13 +1,46 @@
 import { NextResponse } from "next/server";
 import { toRow, validate, priceOf, type Order } from "@/lib/order";
 import { CHARM_IMAGE_MAX_BYTES } from "@/lib/order";
+import { diagnoseSheetResponse, snippet } from "@/lib/sheet";
 
 export const runtime = "nodejs";
 
 /**
+ * Health check: GET /api/order asks the Apps Script's doGet what it is and
+ * names the problem if Google answers with a page instead. No secrets in the
+ * reply. Open it in a browser after changing the deployment.
+ */
+export async function GET() {
+  const url = process.env.ORDERS_WEBHOOK_URL;
+  const secretSet = Boolean(process.env.ORDERS_WEBHOOK_SECRET);
+  if (!url) {
+    return NextResponse.json({ ok: false, webhook: "missing", secretSet, fix: "Set ORDERS_WEBHOOK_URL in Vercel." });
+  }
+  try {
+    const res = await fetch(url, { redirect: "follow", cache: "no-store" });
+    const text = await res.text();
+    const d = diagnoseSheetResponse(res.status, text);
+    return NextResponse.json({
+      ok: d.code === "ok",
+      webhook: url.endsWith("/exec") ? "exec" : url.includes("/dev") ? "dev (wrong: use the /exec URL)" : "set",
+      secretSet,
+      status: res.status,
+      code: d.code,
+      fix: d.fix || undefined,
+      scriptVersion: d.json?.version,
+      reply: d.json ?? snippet(text),
+    });
+  } catch (err) {
+    return NextResponse.json({ ok: false, webhook: "set", secretSet, code: "unreachable", fix: String(err) });
+  }
+}
+
+/**
  * Receives an order, validates it, and forwards a flat row to the Google Apps
- * Script web app (ORDERS_WEBHOOK_URL) that appends it to Jenn's sheet.
- * Without the env var (local dev) it logs the row and still returns a number.
+ * Script web app (ORDERS_WEBHOOK_URL) that appends it to Jenn's sheet. The
+ * sheet hands out the order number (three digits, counting up), so an order
+ * only has a number once it has landed. Without the env var (local dev) the
+ * row is logged and the response says it wasn't stored.
  */
 export async function POST(req: Request) {
   let body: Order;
@@ -31,8 +64,7 @@ export async function POST(req: Request) {
     if (!ok) return NextResponse.json({ error: "That charm photo couldn't be read." }, { status: 422 });
   }
 
-  const orderNumber = makeOrderNumber();
-  const row = toRow(body, orderNumber, priceOf(body));
+  const row = toRow(body, priceOf(body));
 
   const url = process.env.ORDERS_WEBHOOK_URL;
   const secret = process.env.ORDERS_WEBHOOK_SECRET ?? "";
@@ -42,7 +74,7 @@ export async function POST(req: Request) {
       ...row,
       charmPhoto: charmImage ? `(photo attached, ${Math.round(charmImage.dataUrl.length * 0.75 / 1024)} KB)` : "",
     });
-    return NextResponse.json({ orderNumber, stored: false });
+    return NextResponse.json({ stored: false });
   }
 
   try {
@@ -54,38 +86,21 @@ export async function POST(req: Request) {
       cache: "no-store",
     });
     const text = await res.text();
-    let ok = res.ok;
-    try {
-      ok = ok && (JSON.parse(text) as { ok?: boolean }).ok !== false;
-    } catch {
-      /* non-JSON body: trust the status */
+    const d = diagnoseSheetResponse(res.status, text);
+    const orderNumber = d.json?.orderNumber;
+    if (d.code !== "ok" || typeof orderNumber !== "string" || !orderNumber) {
+      console.error("[order] sheet rejected row:", res.status, d.code, snippet(text));
+      // Google answers with a page, not JSON, for every misconfiguration; d.fix names it.
+      // The customer sees the short line; GET /api/order shows the full diagnosis.
+      const msg =
+        d.code === "unknown" || d.code === "html"
+          ? "Couldn't save your order. Try again in a minute."
+          : "The order sheet isn't accepting orders yet.";
+      return NextResponse.json({ error: msg, code: d.code, fix: d.fix }, { status: 502 });
     }
-    if (!ok) {
-      console.error("[order] sheet rejected row:", res.status, text.slice(0, 300));
-      // Google answers with an HTML sign-in / access page when the Apps Script web app
-      // isn't deployed with "Who has access: Anyone". Say so, instead of "try again".
-      const accessWall = res.status === 401 || res.status === 403 || /Access Denied|need access/i.test(text);
-      const msg = accessWall
-        ? "The order sheet isn't accepting orders yet (the Apps Script must be deployed with access set to Anyone)."
-        : "Couldn't save your order. Try again in a minute.";
-      return NextResponse.json({ error: msg }, { status: 502 });
-    }
+    return NextResponse.json({ orderNumber, stored: true });
   } catch (err) {
     console.error("[order] sheet unreachable:", err);
     return NextResponse.json({ error: "Couldn't reach the order sheet. Try again in a minute." }, { status: 502 });
   }
-
-  return NextResponse.json({ orderNumber, stored: true });
-}
-
-/** JN-YYMMDD-XXXX, e.g. JN-260912-K7Q2. Readable on a Venmo note, unique enough. */
-function makeOrderNumber() {
-  const d = new Date();
-  const ymd = [d.getFullYear() % 100, d.getMonth() + 1, d.getDate()]
-    .map((n) => String(n).padStart(2, "0"))
-    .join("");
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const bytes = crypto.getRandomValues(new Uint8Array(4));
-  const tail = Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
-  return `JN-${ymd}-${tail}`;
 }

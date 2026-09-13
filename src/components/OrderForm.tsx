@@ -7,12 +7,13 @@ import QRCode from "qrcode";
 import { useKiosk, KIOSK_CONFIRM_RESET_MS } from "@/lib/kiosk";
 import {
   CHARM_PLACEMENTS,
+  CONTACT,
   CHARM_PRICE,
   CORDS,
   DELIVERY,
-  DELIVERY_PRICE,
   dims,
   LEATHERS,
+  ORDER_MODE,
   SIZES,
   STAMP_MAX,
   STAMP_PLACEMENTS,
@@ -20,9 +21,19 @@ import {
   VENMO_HANDLE,
   venmoUrl,
 } from "@/lib/catalog";
-import { CHARM_IMAGE_MAX_BYTES, EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
+import {
+  CHARM_IMAGE_MAX_BYTES,
+  EMPTY_ORDER,
+  orderLabel,
+  priceOf,
+  receiptMailto,
+  specLines,
+  validate,
+  type Errors,
+  type Order,
+} from "@/lib/order";
 
-type Phase = "editing" | "submitting" | "confirmed";
+type Phase = "editing" | "submitting" | "confirmed" | "emailed";
 
 export default function OrderForm() {
   const [order, setOrder] = useState<Order>(EMPTY_ORDER);
@@ -30,6 +41,8 @@ export default function OrderForm() {
   const [phase, setPhase] = useState<Phase>("editing");
   const [orderNumber, setOrderNumber] = useState<string>("");
   const [serverError, setServerError] = useState<string>("");
+  /** True when the order couldn't be saved, which shows the do-it-by-hand receipt. */
+  const [failed, setFailed] = useState(false);
 
   const total = useMemo(() => priceOf(order), [order]);
 
@@ -53,33 +66,64 @@ export default function OrderForm() {
       });
       return;
     }
+    if (ORDER_MODE === "email") {
+      // No server: hand the order to the customer's mail app, then show the ticket
+      // with the same email and Venmo buttons in case the app didn't open.
+      setPhase("emailed");
+      window.scrollTo({ top: 0 });
+      window.location.href = receiptMailto(CONTACT.email, order, total);
+      return;
+    }
     setPhase("submitting");
     setServerError("");
+    setFailed(false);
     try {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order),
       });
-      const data = (await res.json()) as { orderNumber?: string; error?: string };
-      if (!res.ok || !data.orderNumber) throw new Error(data.error || "Something went wrong.");
+      const data = (await res.json()) as { orderNumber?: string; stored?: boolean; error?: string };
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+      // No number means no row landed (the sheet isn't wired up); don't pretend it did.
+      if (data.stored === false || !data.orderNumber) throw new Error("Couldn't save your order.");
       setOrderNumber(data.orderNumber);
       setPhase("confirmed");
       window.scrollTo({ top: 0 });
     } catch (err) {
-      setServerError(
-        err instanceof Error ? err.message : "Something went wrong. Nothing was charged.",
-      );
+      setServerError(err instanceof Error ? err.message : "Something went wrong.");
+      setFailed(true);
       setPhase("editing");
+      requestAnimationFrame(() => {
+        document.getElementById("email-receipt")?.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
     }
   }
 
   if (phase === "confirmed") {
     return <Confirmation order={order} orderNumber={orderNumber} total={total} />;
   }
+  if (phase === "emailed") {
+    return (
+      <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
+        <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12">
+          <p className="t-mono text-graphite">ALMOST THERE</p>
+          <h1 className="t-heading mt-3">Send it, then pay</h1>
+          <EmailReceipt order={order} total={total} mode="primary" />
+          <button
+            type="button"
+            className="link t-mono inline-flex items-center min-h-11 mt-6"
+            onClick={() => setPhase("editing")}
+          >
+            ← BACK TO THE TICKET
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   const caption = [
-    orderNumber || "Nº ____",
+    orderNumber ? orderLabel(orderNumber) : "Nº ___",
     leather?.name.toUpperCase() ?? "CHOOSE A LEATHER",
     SIZES.find((s) => s.id === order.size)?.name.toUpperCase(),
     cord ? `${cord.name.toUpperCase()} CORD` : null,
@@ -92,13 +136,13 @@ export default function OrderForm() {
   return (
     <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[46fr_54fr] xl:grid-cols-[55fr_45fr] bg-suede">
       {/* The cutting table: sticky preview stage */}
-      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden">
+      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden bg-suede border-b hairline lg:border-b-0">
         <p className="t-label text-graphite text-center hidden lg:block">Order no.</p>
         <h1 className="t-heading text-center mt-2 hidden lg:block tracking-[0.04em]">
-          {orderNumber || (
+          {orderNumber ? orderLabel(orderNumber) : (
             <>
-              JN-
-              <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+              Nº{" "}
+              <span className="inline-block w-[3ch] border-b border-ink align-baseline">
                 <span className="sr-only">pending</span>
               </span>
             </>
@@ -130,10 +174,10 @@ export default function OrderForm() {
             </span>
           </div>
           <h1 className="t-heading lg:hidden mt-8 tracking-[0.04em]">
-            {orderNumber || (
+            {orderNumber ? orderLabel(orderNumber) : (
               <>
-                JN-
-                <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+                Nº{" "}
+                <span className="inline-block w-[3ch] border-b border-ink align-baseline">
                 <span className="sr-only">pending</span>
               </span>
               </>
@@ -370,6 +414,7 @@ export default function OrderForm() {
             {serverError.toUpperCase()} NOTHING WAS CHARGED.
           </p>
         )}
+        {failed && <EmailReceipt order={order} total={total} />}
         </div>
       </div>
 
@@ -380,7 +425,7 @@ export default function OrderForm() {
           <p className="t-heading">${total}</p>
         </div>
         <button type="submit" className="btn-inverse" disabled={phase === "submitting"}>
-          {phase === "submitting" ? "Reserving…" : "Reserve & pay with Venmo"}
+          {phase === "submitting" ? "Reserving…" : ORDER_MODE === "email" ? "Reserve by email" : "Reserve & pay with Venmo"}
         </button>
       </div>
     </form>
@@ -746,14 +791,67 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   );
 }
 
+/**
+ * Shown when the order couldn't be saved. The same ticket lines as the
+ * confirmation, plus a button that opens mail to Jenn with the whole order
+ * in the body, so nothing is lost while the sheet is down.
+ */
+/**
+ * `mode` picks the copy: "primary" is the normal email flow (the mail app
+ * just opened), "fallback" is the sheet being down.
+ */
+function EmailReceipt({ order, total, mode = "fallback" }: { order: Order; total: number; mode?: "primary" | "fallback" }) {
+  if (!CONTACT.email) return null;
+  const mailto = receiptMailto(CONTACT.email, order, total);
+  const memo = `Notebook for ${order.name.trim()}`;
+  const venmo = venmoUrl(total, memo);
+  return (
+    <div id="email-receipt" className={mode === "primary" ? "mt-8" : "mt-6 border hairline p-5 md:p-6"}>
+      <p className="t-mono text-graphite">YOUR ORDER</p>
+      <dl className="t-mono mt-4 border-t hairline">
+        {specLines(order).map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
+            <dt className="text-graphite">{k}</dt>
+            <dd className="text-right">{v}</dd>
+          </div>
+        ))}
+        <div className="flex justify-between gap-4 py-3">
+          <dt>TOTAL</dt>
+          <dd>${total}</dd>
+        </div>
+      </dl>
+      <p className="mt-4 max-w-prose">
+        {mode === "primary"
+          ? "Your mail app should have opened with this order filled in, addressed to me. Send it"
+          : "My order sheet isn\u2019t answering, so let\u2019s do this by hand. Screenshot these order details and send them to "}
+        {mode === "fallback" && <span className="t-mono">{CONTACT.email}</span>}
+        {order.charm && order.charmImage ? " along with your charm photo" : ""}, then send{" "}
+        <span className="t-mono">${total}</span> to <span className="t-mono">@{VENMO_HANDLE}</span> on
+        Venmo with <span className="t-mono">{memo}</span> as the memo. I&rsquo;ll confirm within a day and
+        start cutting.
+      </p>
+      <div className="flex flex-wrap gap-3 mt-5">
+        <a href={mailto} className="btn-primary inline-block">
+          Email these details to Jenn
+        </a>
+        <a href={venmo} className="btn-primary inline-block" target="_blank" rel="noopener">
+          Pay ${total} to @{VENMO_HANDLE} on Venmo
+        </a>
+      </div>
+      <p className="t-mono text-graphite mt-3">
+        {mode === "primary" ? "MAIL DIDN\u2019T OPEN? THE EMAIL BUTTON TRIES AGAIN, OR WRITE TO " : "THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED. "}
+        {mode === "primary" && <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>}
+      </p>
+    </div>
+  );
+}
+
 function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber: string; total: number }) {
   const router = useRouter();
   const [qr, setQr] = useState<string>("");
   const kiosk = useKiosk();
-  const leather = LEATHERS.find((l) => l.id === order.leather)?.name ?? "";
-  const size = SIZES.find((s) => s.id === order.size)?.name ?? "";
-  const cord = CORDS.find((c) => c.id === order.cord)?.name ?? "";
-  const venmo = venmoUrl(total, orderNumber);
+  const label = orderLabel(orderNumber);
+  const venmo = venmoUrl(total, `Notebook ${label}`);
 
   useEffect(() => {
     let live = true;
@@ -773,40 +871,13 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
     return () => window.clearTimeout(t);
   }, [kiosk, router]);
 
-  const lines: [string, string][] = [
-    ["LEATHER", leather.toUpperCase()],
-    ["SIZE", size.toUpperCase()],
-    ["CORNERS", order.roundedEdges ? "ROUNDED" : "SQUARE"],
-    ["CORD", cord.toUpperCase()],
-    [
-      "CHARM",
-      order.charm
-        ? [
-            CHARM_PLACEMENTS.find((p) => p.id === order.charmPlacement)?.name.toUpperCase() ?? "YES",
-            order.charmImage ? "PHOTO ATTACHED" : null,
-          ]
-            .filter(Boolean)
-            .join(" · ")
-        : "NONE",
-    ],
-    ["STAMP", order.stamp ? `"${order.stampText.trim().toUpperCase()}"` : "NONE"],
-    ["MADE FOR", order.name.trim().toUpperCase()],
-    [
-      "DELIVERY",
-      [
-        DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? "",
-        order.delivery === "delivery" ? `+$${DELIVERY_PRICE}` : null,
-      ]
-        .filter(Boolean)
-        .join(" · "),
-    ],
-  ];
+  const lines = specLines(order);
   return (
     <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
       <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-start">
         <div>
           <p className="t-mono text-graphite">RESERVED</p>
-          <h1 className="t-heading mt-3">{orderNumber}</h1>
+          <h1 className="t-heading mt-3">{label}</h1>
           <dl className="t-mono mt-8 border-t hairline">
             {lines.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
@@ -838,19 +909,27 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
             </a>
           )}
           <p className="t-mono text-graphite mt-8">I&rsquo;LL WRITE TO {order.email.trim().toUpperCase()}</p>
+          {CONTACT.email && (
+            <p className="t-mono text-graphite mt-2">
+              QUESTIONS?{" "}
+              <a href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`Notebook ${label}`)}`} className="link">
+                {CONTACT.email.toUpperCase()}
+              </a>
+            </p>
+          )}
         </div>
         <div className="flex flex-col items-center gap-4 md:pt-2">
           {qr && (
             <div
               className="w-44 h-44 md:w-52 md:h-52 [&>svg]:w-full [&>svg]:h-full"
-              aria-label={`Venmo payment QR code for ${orderNumber}`}
+              aria-label={`Venmo payment QR code for ${label}`}
               role="img"
               dangerouslySetInnerHTML={{ __html: qr }}
             />
           )}
           <p className="t-mono text-graphite text-center">
             VENMO @{VENMO_HANDLE.toUpperCase()}
-            <br />${total} · {orderNumber}
+            <br />${total} · {label}
           </p>
           {kiosk && (
             <button type="button" className="btn-ghost mt-4" onClick={() => router.push("/")}>

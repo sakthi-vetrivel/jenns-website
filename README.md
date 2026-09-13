@@ -21,14 +21,37 @@ npm run dev
 - `/order` the ticket: leather, size, edges, cord, charm, stamp, contact + delivery, payment
 - `POST /api/order` validates and forwards one row to the sheet
 
+## Orders, for now: by email
+
+`NEXT_PUBLIC_ORDER_MODE` picks how an order leaves the site. Unset (or
+`email`) is the MVP: "Reserve by email" validates the ticket, opens the
+customer's mail app addressed to Jenn with the subject and the whole order
+in the body, and shows a page with the ticket, an email button (in case the
+app didn't open) and a Venmo button for the total. No server, no sheet.
+Set it to `sheet` in Vercel once the Apps Script web app is public and
+`/api/order` answers `ok: true`; the sheet path below takes over.
+
 ## Orders → Google Sheet
 
 `google/Code.gs` has the Apps Script and a five-step setup. The site posts
 `{ secret, row }` to the deployed web app URL; the script appends `row` to the
-"Orders" tab. A charm photo, when attached, is saved to a Drive folder named
-"Notebook orders - charm photos" and its link goes in the `charmPhoto` column.
+"Orders" tab and answers with the order number. Numbers are three digits and
+count up (Nº 001, 002, …), one higher than the highest already in the sheet;
+set the `ORDER_START` script property to begin somewhere else. A charm photo,
+when attached, is saved to a Drive folder named "Notebook orders - charm
+photos" and its link goes in the `charmPhoto` column.
 Set `ORDERS_WEBHOOK_URL` and `ORDERS_WEBHOOK_SECRET` in Vercel.
-With no URL set, orders are logged to the server console and still get a number.
+
+**Is it working?** Open `/api/order` in a browser (GET). It pings the script
+and answers `{"ok":true,"scriptVersion":2,...}` when everything is wired, or
+names the problem (`not-public`, `not-authorized`, `not-deployed`,
+`bad-secret`, `old-script`) with a one-line fix. The usual one: the
+deployment's "Who has access" is not "Anyone", so Google answers with a
+sign-in page. Every edit to `Code.gs` needs Deploy → Manage deployments →
+edit → New version, or the `/exec` URL keeps running the old code.
+With no URL set, the row is logged to the server console and the customer
+sees the do-it-by-hand receipt (screenshot, email Jenn, pay on Venmo)
+instead of a confirmation.
 
 ## The iPad at the stall
 
