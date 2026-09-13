@@ -384,7 +384,6 @@ export default function OrderForm() {
       <div className="fixed bottom-0 inset-x-0 lg:left-[46%] xl:left-[55%] lg:right-8 bg-paper border-t hairline px-5 md:px-8 xl:px-10 py-4 flex items-center justify-between gap-4 z-20">
         <p key={total} className="t-mono tick">
           TOTAL ${total}
-          <span className="hidden xl:inline"> · PAY BY VENMO AFTER CONFIRMATION</span>
         </p>
         <button type="submit" className="btn-primary" disabled={phase === "submitting"}>
           {phase === "submitting" ? "Reserving…" : "Reserve & pay with Venmo"}

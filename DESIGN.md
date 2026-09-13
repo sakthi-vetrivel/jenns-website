@@ -220,7 +220,7 @@ The form asks exactly these, in this order. Each is a numbered section on the ti
 5. **05 Charm (+$5):** none, or yes, then where: on the spine or on the front, then a description of the charm and an optional photo of it. One of description or photo is required. The photo is downscaled in the browser and saved to Jenn's Drive by the sheet script; the sheet row gets the link. The where, description, and photo fields appear only after yes.
 6. **06 Stamp (+$5):** none, or yes, then up to 3 letters (short text input with a live count) and where (spine, front, or inside cover). Preview renders debossed.
 7. **07 Where it goes:** name, email, phone. Delivery method: meet at Noe Valley Town Square (no charge), or an address for delivery (+$15). The address fields appear only when delivery is chosen.
-8. **08 Payment:** one sentence and the button. Reserving issues the order number; the confirmation then carries a Venmo button that opens the app pre-filled to pay @jchwang the total with the order number as the memo. On the kiosk the same link is a QR code instead. The button reads "Reserve & pay with Venmo."
+8. **08 Payment:** one sentence and the button. Reserving issues the order number; the confirmation then carries a Venmo button that opens the app pre-filled to pay @JChwang the total with the order number as the memo. On the kiosk the same link is a QR code instead. The button reads "Reserve & pay with Venmo."
 
 Submission writes one row to the Google Sheet. The confirmation page repeats the order number, the configuration as a ticket, the Venmo handle with a QR, and the one sentence from Jenn.
 

@@ -91,7 +91,7 @@ export const DELIVERY = [
   { id: "delivery", name: "Deliver to my address", price: DELIVERY_PRICE },
 ] as const;
 
-export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "jchwang";
+export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "JChwang";
 
 /** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with the order number as the memo. */
 export function venmoUrl(amount: number, orderNumber: string): string {
