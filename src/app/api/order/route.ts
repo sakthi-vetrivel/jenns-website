@@ -6,8 +6,10 @@ export const runtime = "nodejs";
 
 /**
  * Receives an order, validates it, and forwards a flat row to the Google Apps
- * Script web app (ORDERS_WEBHOOK_URL) that appends it to Jenn's sheet.
- * Without the env var (local dev) it logs the row and still returns a number.
+ * Script web app (ORDERS_WEBHOOK_URL) that appends it to Jenn's sheet. The
+ * sheet hands out the order number (three digits, counting up), so an order
+ * only has a number once it has landed. Without the env var (local dev) the
+ * row is logged and the response says it wasn't stored.
  */
 export async function POST(req: Request) {
   let body: Order;
@@ -31,8 +33,7 @@ export async function POST(req: Request) {
     if (!ok) return NextResponse.json({ error: "That charm photo couldn't be read." }, { status: 422 });
   }
 
-  const orderNumber = makeOrderNumber();
-  const row = toRow(body, orderNumber, priceOf(body));
+  const row = toRow(body, priceOf(body));
 
   const url = process.env.ORDERS_WEBHOOK_URL;
   const secret = process.env.ORDERS_WEBHOOK_SECRET ?? "";
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
       ...row,
       charmPhoto: charmImage ? `(photo attached, ${Math.round(charmImage.dataUrl.length * 0.75 / 1024)} KB)` : "",
     });
-    return NextResponse.json({ orderNumber, stored: false });
+    return NextResponse.json({ stored: false });
   }
 
   try {
@@ -55,31 +56,21 @@ export async function POST(req: Request) {
     });
     const text = await res.text();
     let ok = res.ok;
+    let orderNumber = "";
     try {
-      ok = ok && (JSON.parse(text) as { ok?: boolean }).ok !== false;
+      const parsed = JSON.parse(text) as { ok?: boolean; orderNumber?: string };
+      ok = ok && parsed.ok !== false;
+      orderNumber = typeof parsed.orderNumber === "string" ? parsed.orderNumber : "";
     } catch {
-      /* non-JSON body: trust the status */
+      ok = false;
     }
-    if (!ok) {
+    if (!ok || !orderNumber) {
       console.error("[order] sheet rejected row:", res.status, text.slice(0, 300));
       return NextResponse.json({ error: "Couldn't save your order. Try again in a minute." }, { status: 502 });
     }
+    return NextResponse.json({ orderNumber, stored: true });
   } catch (err) {
     console.error("[order] sheet unreachable:", err);
     return NextResponse.json({ error: "Couldn't reach the order sheet. Try again in a minute." }, { status: 502 });
   }
-
-  return NextResponse.json({ orderNumber, stored: true });
-}
-
-/** JN-YYMMDD-XXXX, e.g. JN-260912-K7Q2. Readable on a Venmo note, unique enough. */
-function makeOrderNumber() {
-  const d = new Date();
-  const ymd = [d.getFullYear() % 100, d.getMonth() + 1, d.getDate()]
-    .map((n) => String(n).padStart(2, "0"))
-    .join("");
-  const alphabet = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const bytes = crypto.getRandomValues(new Uint8Array(4));
-  const tail = Array.from(bytes, (b) => alphabet[b % alphabet.length]).join("");
-  return `JN-${ymd}-${tail}`;
 }

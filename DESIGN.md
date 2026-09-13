@@ -263,3 +263,4 @@ Every component designs its empty, loading, error, and long-content states. A ti
 | 2026-09-12 | Prices from Jenn: full $75, passport $50, keychain $15, charm and stamp $5 each, cord free, stamp up to 3 letters | Jenn's message, 2026-09-12. Keychain added as a third size. |
 | 2026-09-12 | Charm section takes a description and an optional photo, stored in Drive | User request. Keeps every order artifact inside Jenn's Google account. |
 | 2026-09-12 | Order ticket fields fixed at eight numbered sections | User-supplied list: leather, size (full/passport), rounded edges, cord color, charm (spine/front), stamp (initials, where), contact + delivery (Noe Valley Town Square meetup or address), Venmo payment statement. |
+| 2026-09-13 | Order numbers are three digits, counting up: Nº 042 | User request, to make the small batch visible. Issued by the sheet script on landing, so a failed order has no number; the hero tag and ticket placeholder use the same form. |

@@ -97,13 +97,18 @@ export function validate(o: Order): Errors {
   return e;
 }
 
-/** Flat, human-readable shape that maps 1:1 to sheet columns. */
-export function toRow(o: Order, orderNumber: string, total: number) {
+/** "042" → "Nº 042". The number itself is issued by the sheet, three digits counting up. */
+export function orderLabel(orderNumber: string): string {
+  return `Nº ${orderNumber}`;
+}
+
+/** Flat, human-readable shape that maps 1:1 to sheet columns. The sheet fills in orderNumber. */
+export function toRow(o: Order, total: number) {
   const leather = LEATHERS.find((l) => l.id === o.leather)?.name ?? o.leather;
   const size = SIZES.find((s) => s.id === o.size)?.name ?? o.size;
   const cord = CORDS.find((c) => c.id === o.cord)?.name ?? o.cord;
   return {
-    orderNumber,
+    orderNumber: "",
     submittedAt: new Date().toISOString(),
     status: "new",
     leather,
@@ -169,9 +174,8 @@ export function specLines(o: Order): [string, string][] {
  * have carried, so Jenn can enter it by hand. The charm photo can't ride a
  * mailto link; the customer is asked to attach it.
  */
-export function receiptText(o: Order, total: number, orderNumber?: string): string {
+export function receiptText(o: Order, total: number): string {
   const lines: string[] = [];
-  if (orderNumber) lines.push(`ORDER ${orderNumber}`);
   for (const [k, v] of specLines(o)) lines.push(`${k}: ${v}`);
   if (o.charm && o.charmDescription.trim()) lines.push(`CHARM DESCRIPTION: ${o.charmDescription.trim()}`);
   if (o.stamp) {
@@ -193,8 +197,8 @@ export function receiptText(o: Order, total: number, orderNumber?: string): stri
 }
 
 /** mailto: link that opens the customer's mail app with the receipt filled in. */
-export function receiptMailto(to: string, o: Order, total: number, orderNumber?: string): string {
-  const subject = orderNumber ? `Notebook order ${orderNumber}` : `Notebook order for ${o.name.trim()}`;
-  const body = receiptText(o, total, orderNumber);
+export function receiptMailto(to: string, o: Order, total: number): string {
+  const subject = `Notebook order for ${o.name.trim()}`;
+  const body = receiptText(o, total);
   return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

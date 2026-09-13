@@ -25,10 +25,15 @@ npm run dev
 
 `google/Code.gs` has the Apps Script and a five-step setup. The site posts
 `{ secret, row }` to the deployed web app URL; the script appends `row` to the
-"Orders" tab. A charm photo, when attached, is saved to a Drive folder named
-"Notebook orders - charm photos" and its link goes in the `charmPhoto` column.
+"Orders" tab and answers with the order number. Numbers are three digits and
+count up (Nº 001, 002, …), one higher than the highest already in the sheet;
+set the `ORDER_START` script property to begin somewhere else. A charm photo,
+when attached, is saved to a Drive folder named "Notebook orders - charm
+photos" and its link goes in the `charmPhoto` column.
 Set `ORDERS_WEBHOOK_URL` and `ORDERS_WEBHOOK_SECRET` in Vercel.
-With no URL set, orders are logged to the server console and still get a number.
+With no URL set, the row is logged to the server console and the customer
+sees the do-it-by-hand receipt (screenshot, email Jenn, pay on Venmo)
+instead of a confirmation.
 
 ## The iPad at the stall
 

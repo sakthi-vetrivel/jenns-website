@@ -23,6 +23,7 @@ import {
 import {
   CHARM_IMAGE_MAX_BYTES,
   EMPTY_ORDER,
+  orderLabel,
   priceOf,
   receiptMailto,
   specLines,
@@ -39,8 +40,8 @@ export default function OrderForm() {
   const [phase, setPhase] = useState<Phase>("editing");
   const [orderNumber, setOrderNumber] = useState<string>("");
   const [serverError, setServerError] = useState<string>("");
-  /** Set when the order couldn't be saved; carries the number if one was issued. */
-  const [failed, setFailed] = useState<{ orderNumber?: string } | null>(null);
+  /** True when the order couldn't be saved, which shows the do-it-by-hand receipt. */
+  const [failed, setFailed] = useState(false);
 
   const total = useMemo(() => priceOf(order), [order]);
 
@@ -66,8 +67,7 @@ export default function OrderForm() {
     }
     setPhase("submitting");
     setServerError("");
-    setFailed(null);
-    let issued: string | undefined;
+    setFailed(false);
     try {
       const res = await fetch("/api/order", {
         method: "POST",
@@ -75,18 +75,15 @@ export default function OrderForm() {
         body: JSON.stringify(order),
       });
       const data = (await res.json()) as { orderNumber?: string; stored?: boolean; error?: string };
-      if (!res.ok || !data.orderNumber) throw new Error(data.error || "Something went wrong.");
-      // A number without a saved row means the sheet isn't wired up; don't pretend it landed.
-      if (data.stored === false) {
-        issued = data.orderNumber;
-        throw new Error("Couldn't save your order.");
-      }
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+      // No number means no row landed (the sheet isn't wired up); don't pretend it did.
+      if (data.stored === false || !data.orderNumber) throw new Error("Couldn't save your order.");
       setOrderNumber(data.orderNumber);
       setPhase("confirmed");
       window.scrollTo({ top: 0 });
     } catch (err) {
       setServerError(err instanceof Error ? err.message : "Something went wrong.");
-      setFailed({ orderNumber: issued });
+      setFailed(true);
       setPhase("editing");
       requestAnimationFrame(() => {
         document.getElementById("email-receipt")?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -99,7 +96,7 @@ export default function OrderForm() {
   }
 
   const caption = [
-    orderNumber || "Nº ____",
+    orderNumber ? orderLabel(orderNumber) : "Nº ___",
     leather?.name.toUpperCase() ?? "CHOOSE A LEATHER",
     SIZES.find((s) => s.id === order.size)?.name.toUpperCase(),
     cord ? `${cord.name.toUpperCase()} CORD` : null,
@@ -115,10 +112,10 @@ export default function OrderForm() {
       <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden bg-suede border-b hairline lg:border-b-0">
         <p className="t-label text-graphite text-center hidden lg:block">Order no.</p>
         <h1 className="t-heading text-center mt-2 hidden lg:block tracking-[0.04em]">
-          {orderNumber || (
+          {orderNumber ? orderLabel(orderNumber) : (
             <>
-              JN-
-              <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+              Nº{" "}
+              <span className="inline-block w-[3ch] border-b border-ink align-baseline">
                 <span className="sr-only">pending</span>
               </span>
             </>
@@ -150,10 +147,10 @@ export default function OrderForm() {
             </span>
           </div>
           <h1 className="t-heading lg:hidden mt-8 tracking-[0.04em]">
-            {orderNumber || (
+            {orderNumber ? orderLabel(orderNumber) : (
               <>
-                JN-
-                <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+                Nº{" "}
+                <span className="inline-block w-[3ch] border-b border-ink align-baseline">
                 <span className="sr-only">pending</span>
               </span>
               </>
@@ -390,7 +387,7 @@ export default function OrderForm() {
             {serverError.toUpperCase()} NOTHING WAS CHARGED.
           </p>
         )}
-        {failed && <EmailReceipt order={order} total={total} orderNumber={failed.orderNumber} />}
+        {failed && <EmailReceipt order={order} total={total} />}
         </div>
       </div>
 
@@ -772,15 +769,14 @@ function Field({ label, error, children }: { label: string; error?: string; chil
  * confirmation, plus a button that opens mail to Jenn with the whole order
  * in the body, so nothing is lost while the sheet is down.
  */
-function EmailReceipt({ order, total, orderNumber }: { order: Order; total: number; orderNumber?: string }) {
+function EmailReceipt({ order, total }: { order: Order; total: number }) {
   if (!CONTACT.email) return null;
-  const mailto = receiptMailto(CONTACT.email, order, total, orderNumber);
-  const memo = orderNumber ?? order.name.trim();
+  const mailto = receiptMailto(CONTACT.email, order, total);
+  const memo = `Notebook for ${order.name.trim()}`;
   const venmo = venmoUrl(total, memo);
   return (
     <div id="email-receipt" className="mt-6 border hairline p-5 md:p-6">
       <p className="t-mono text-graphite">YOUR ORDER</p>
-      {orderNumber && <p className="t-heading mt-2">{orderNumber}</p>}
       <dl className="t-mono mt-4 border-t hairline">
         {specLines(order).map(([k, v]) => (
           <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
@@ -818,7 +814,8 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
   const router = useRouter();
   const [qr, setQr] = useState<string>("");
   const kiosk = useKiosk();
-  const venmo = venmoUrl(total, orderNumber);
+  const label = orderLabel(orderNumber);
+  const venmo = venmoUrl(total, `Notebook ${label}`);
 
   useEffect(() => {
     let live = true;
@@ -844,7 +841,7 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
       <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-start">
         <div>
           <p className="t-mono text-graphite">RESERVED</p>
-          <h1 className="t-heading mt-3">{orderNumber}</h1>
+          <h1 className="t-heading mt-3">{label}</h1>
           <dl className="t-mono mt-8 border-t hairline">
             {lines.map(([k, v]) => (
               <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
@@ -879,7 +876,7 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
           {CONTACT.email && (
             <p className="t-mono text-graphite mt-2">
               QUESTIONS?{" "}
-              <a href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(orderNumber)}`} className="link">
+              <a href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(`Notebook ${label}`)}`} className="link">
                 {CONTACT.email.toUpperCase()}
               </a>
             </p>
@@ -889,14 +886,14 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
           {qr && (
             <div
               className="w-44 h-44 md:w-52 md:h-52 [&>svg]:w-full [&>svg]:h-full"
-              aria-label={`Venmo payment QR code for ${orderNumber}`}
+              aria-label={`Venmo payment QR code for ${label}`}
               role="img"
               dangerouslySetInnerHTML={{ __html: qr }}
             />
           )}
           <p className="t-mono text-graphite text-center">
             VENMO @{VENMO_HANDLE.toUpperCase()}
-            <br />${total} · {orderNumber}
+            <br />${total} · {label}
           </p>
           {kiosk && (
             <button type="button" className="btn-ghost mt-4" onClick={() => router.push("/")}>

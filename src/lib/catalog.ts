@@ -104,13 +104,13 @@ export const CONTACT = {
   instagram: (process.env.NEXT_PUBLIC_INSTAGRAM ?? "").replace(/^@/, ""),
 };
 
-/** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with the order number as the memo. */
-export function venmoUrl(amount: number, orderNumber: string): string {
-  return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(orderNumber)}`;
+/** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with `memo` as the note. */
+export function venmoUrl(amount: number, memo: string): string {
+  return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(memo)}`;
 }
 
 /** Static for now; later read from the same Google Sheet the orders land in. */
 export const QUEUE = {
-  nowMaking: "0141",
+  nowMaking: "141",
   nextOpenSlot: "3 Oct",
 };
