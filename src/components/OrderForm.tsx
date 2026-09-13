@@ -98,7 +98,9 @@ export default function OrderForm() {
           {orderNumber || (
             <>
               JN-
-              <span className="inline-block w-[4ch] border-b border-ink align-baseline" aria-label="pending" />
+              <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+                <span className="sr-only">pending</span>
+              </span>
             </>
           )}
         </h1>
@@ -131,7 +133,9 @@ export default function OrderForm() {
             {orderNumber || (
               <>
                 JN-
-                <span className="inline-block w-[4ch] border-b border-ink align-baseline" aria-label="pending" />
+                <span className="inline-block w-[4ch] border-b border-ink align-baseline">
+                <span className="sr-only">pending</span>
+              </span>
               </>
             )}
           </h1>
