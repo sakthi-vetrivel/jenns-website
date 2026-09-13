@@ -44,6 +44,15 @@ html {
   color-scheme: light only;
 }
 
+::selection {
+  background: var(--pen);
+  color: var(--paper);
+}
+input,
+textarea {
+  caret-color: var(--pen);
+}
+
 body {
   background: var(--linen);
   color: var(--ink);
