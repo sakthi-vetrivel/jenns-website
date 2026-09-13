@@ -11,6 +11,7 @@ export default function Footer() {
       <p className="t-mono text-graphite">MADE BY HAND · SAN FRANCISCO · {new Date().getFullYear()}</p>
       {contact.length > 0 && (
         <p className="t-mono text-graphite">
+          {CONTACT.name && <span>{CONTACT.name.toUpperCase()} · </span>}
           {contact.map((c, i) => (
             <span key={c.href}>
               {i > 0 && <span aria-hidden> · </span>}

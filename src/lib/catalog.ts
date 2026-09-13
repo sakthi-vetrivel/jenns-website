@@ -94,11 +94,13 @@ export const DELIVERY = [
 export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "JChwang";
 
 /**
- * How to reach Jenn. Set in Vercel as NEXT_PUBLIC_CONTACT_EMAIL and
- * NEXT_PUBLIC_INSTAGRAM (handle without the @). Anything left blank is not shown.
+ * How to reach Jenn. Override in Vercel with NEXT_PUBLIC_CONTACT_NAME,
+ * NEXT_PUBLIC_CONTACT_EMAIL, NEXT_PUBLIC_INSTAGRAM (handle without the @).
+ * Anything left blank is not shown.
  */
 export const CONTACT = {
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
+  name: process.env.NEXT_PUBLIC_CONTACT_NAME ?? "Jennifer Hwang",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "Jennifer.Cj.Hwang@gmail.com",
   instagram: (process.env.NEXT_PUBLIC_INSTAGRAM ?? "").replace(/^@/, ""),
 };
 
