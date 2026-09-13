@@ -73,7 +73,7 @@ export default function Hero() {
       {/* The object. It stays put while the page turns around it. */}
       <div className="relative lg:col-span-7 h-[48vh] md:h-[52vh] lg:h-auto lg:min-h-0 order-first lg:order-none overflow-hidden">
         <Image
-          src="/images/hero-scene.jpg"
+          src="/images/hero-stack.jpg"
           alt="A closed chestnut leather traveler's notebook with a sage cord and a brass bead, on raw linen over pine, in afternoon light."
           fill
           priority
