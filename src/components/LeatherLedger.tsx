@@ -41,7 +41,7 @@ export default function LeatherLedger() {
                 </span>
                 <h3 className="t-heading !text-[1.75rem]">{l.name}</h3>
               </div>
-              <p className="t-mono col-start-2 lg:col-start-6 lg:col-span-6">{l.ages.toUpperCase()}</p>
+              <p className="text-graphite col-start-2 lg:col-start-6 lg:col-span-6">{l.ages}</p>
             </div>
           </li>
         ))}
