@@ -726,9 +726,10 @@ function Choice({
 }
 
 function Expand({ open, children }: { open: boolean; children: React.ReactNode }) {
+  // `inert` removes the collapsed fields from the tab order and the accessibility tree.
   return (
-    <div className="expand" data-open={open ? "true" : "false"} aria-hidden={!open}>
-      <div>{open ? children : <div className="pointer-events-none">{children}</div>}</div>
+    <div className="expand" data-open={open ? "true" : "false"} inert={!open}>
+      <div>{children}</div>
     </div>
   );
 }
