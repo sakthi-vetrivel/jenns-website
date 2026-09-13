@@ -112,7 +112,7 @@ export default function OrderForm() {
   return (
     <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[46fr_54fr] xl:grid-cols-[55fr_45fr] bg-suede">
       {/* The cutting table: sticky preview stage */}
-      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden">
+      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden bg-suede border-b hairline lg:border-b-0">
         <p className="t-label text-graphite text-center hidden lg:block">Order no.</p>
         <h1 className="t-heading text-center mt-2 hidden lg:block tracking-[0.04em]">
           {orderNumber || (
