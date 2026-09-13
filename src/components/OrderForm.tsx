@@ -367,9 +367,6 @@ export default function OrderForm() {
             first: that gives your order a number, and the Venmo button that follows carries the total
             and the number as the memo so Jenn can match the payment to your notebook.
           </p>
-          <button type="submit" className="btn-primary mt-6" disabled={phase === "submitting"}>
-            {phase === "submitting" ? "Reserving…" : `Reserve & pay $${total} with Venmo`}
-          </button>
         </Section>
 
         {serverError && (
