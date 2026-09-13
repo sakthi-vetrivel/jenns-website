@@ -364,8 +364,7 @@ export default function OrderForm() {
         <Section n="08" title="Payment">
           <p className="max-w-prose">
             Full payment up front, to <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo. Reserve
-            first: that gives your order a number, and the Venmo button that follows carries the total
-            and the number as the memo so Jenn can match the payment to your notebook.
+            below; the next screen opens Venmo with the total and your order number as the memo.
           </p>
         </Section>
 
