@@ -7,5 +7,11 @@ export const metadata: Metadata = {
 };
 
 export default function OrderPage() {
-  return <OrderForm />;
+  return (
+    <>
+      <OrderForm />
+      {/* Clears the fixed total bar so the footer's last line stays readable. */}
+      <div className="h-24" aria-hidden />
+    </>
+  );
 }
