@@ -538,7 +538,7 @@ function Preview({
         )}
 
         {/* Dimension lines: width below, height to the right. */}
-        <div className="absolute left-0 right-0 -bottom-9 flex flex-col items-center" aria-hidden>
+        <div className="absolute left-0 right-0 -bottom-9 hidden lg:flex flex-col items-center" aria-hidden>
           <div className="w-full flex items-center">
             <span className="w-px h-3 bg-graphite" />
             <span className="flex-1 h-px bg-graphite" />
@@ -546,7 +546,7 @@ function Preview({
           </div>
           <span className="t-mono text-graphite mt-1">{size.width} IN</span>
         </div>
-        <div className="absolute top-0 bottom-0 -right-9 flex items-center" aria-hidden>
+        <div className="absolute top-0 bottom-0 -right-9 hidden lg:flex items-center" aria-hidden>
           <div className="h-full flex flex-col items-center">
             <span className="h-px w-3 bg-graphite" />
             <span className="flex-1 w-px bg-graphite" />
