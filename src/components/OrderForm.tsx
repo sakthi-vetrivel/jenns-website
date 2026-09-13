@@ -401,19 +401,20 @@ function Preview({
         aria-hidden
       >
         <Image src={src} alt="" fill sizes="45vw" className="object-contain drop-shadow-[-18px_22px_16px_rgba(40,32,24,0.28)]" />
-        {/* cord */}
-        <div
-          className="absolute"
-          style={{
-            left: "8%",
-            right: "8%",
-            top: "51%",
-            height: keychain ? 2 : 3,
-            background: cord?.color ?? "rgba(28,31,43,0.3)",
-            borderRadius: 2,
-            boxShadow: "0 1px 1px rgba(0,0,0,0.25)",
-          }}
-        />
+        {cord && (
+          <div
+            className="absolute"
+            style={{
+              left: "8%",
+              right: "8%",
+              top: "51%",
+              height: keychain ? 2 : 3,
+              background: cord.color,
+              borderRadius: 2,
+              boxShadow: "0 1px 1px rgba(0,0,0,0.25)",
+            }}
+          />
+        )}
         {order.charm && (
           <div
             className="absolute rounded-full"
