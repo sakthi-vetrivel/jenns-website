@@ -182,13 +182,12 @@ button:disabled {
 .swatch {
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  outline: 1px solid transparent;
-  outline-offset: 3px;
   transition: none;
 }
+.swatch:hover { box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--rule); }
 .swatch[aria-pressed="true"],
 .swatch[data-selected="true"] {
-  outline-color: var(--pen);
+  box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px var(--pen);
 }
 
 /* Debossed stamp preview */
