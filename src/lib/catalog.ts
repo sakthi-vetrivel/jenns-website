@@ -93,6 +93,15 @@ export const DELIVERY = [
 
 export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "JChwang";
 
+/**
+ * How to reach Jenn. Set in Vercel as NEXT_PUBLIC_CONTACT_EMAIL and
+ * NEXT_PUBLIC_INSTAGRAM (handle without the @). Anything left blank is not shown.
+ */
+export const CONTACT = {
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
+  instagram: (process.env.NEXT_PUBLIC_INSTAGRAM ?? "").replace(/^@/, ""),
+};
+
 /** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with the order number as the memo. */
 export function venmoUrl(amount: number, orderNumber: string): string {
   return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(orderNumber)}`;

@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import { useKiosk, KIOSK_CONFIRM_RESET_MS } from "@/lib/kiosk";
 import {
   CHARM_PLACEMENTS,
+  CONTACT,
   CHARM_PRICE,
   CORDS,
   DELIVERY,
@@ -838,6 +839,14 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
             </a>
           )}
           <p className="t-mono text-graphite mt-8">I&rsquo;LL WRITE TO {order.email.trim().toUpperCase()}</p>
+          {CONTACT.email && (
+            <p className="t-mono text-graphite mt-2">
+              QUESTIONS?{" "}
+              <a href={`mailto:${CONTACT.email}?subject=${encodeURIComponent(orderNumber)}`} className="link">
+                {CONTACT.email.toUpperCase()}
+              </a>
+            </p>
+          )}
         </div>
         <div className="flex flex-col items-center gap-4 md:pt-2">
           {qr && (
