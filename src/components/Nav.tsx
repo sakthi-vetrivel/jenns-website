@@ -19,7 +19,7 @@ export default function Nav({ inset = false }: { inset?: boolean }) {
       className={
         inset
           ? "flex items-center justify-between pb-5 border-b hairline"
-          : "flex items-center justify-between px-5 md:px-8 pt-8 pb-4"
+          : "flex items-center justify-between mx-5 md:mx-8 pt-8 pb-4 border-b hairline"
       }
     >
       <Link href="/" className="t-wordmark text-ink inline-flex items-center min-h-11" aria-label="Jenn, home">
