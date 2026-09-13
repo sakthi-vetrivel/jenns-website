@@ -595,6 +595,7 @@ function CharmPhoto({
         ref={inputRef}
         type="file"
         accept="image/*"
+        aria-label="Photo of the charm"
         className="sr-only"
         onChange={(e) => pick(e.target.files?.[0])}
       />
