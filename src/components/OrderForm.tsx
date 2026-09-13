@@ -116,7 +116,7 @@ export default function OrderForm() {
             <span className="flex items-baseline gap-6">
               <button
                 type="button"
-                className="link t-mono"
+                className="link t-mono inline-flex items-center min-h-11"
                 onClick={() => {
                   setOrder(EMPTY_ORDER);
                   setErrors({});
@@ -192,7 +192,7 @@ export default function OrderForm() {
               <button
                 key={c.id}
                 type="button"
-                className="swatch !rounded-full w-10 h-10"
+                className="swatch !rounded-full w-11 h-11"
                 style={{ background: c.color }}
                 aria-pressed={order.cord === c.id}
                 aria-label={c.name}
@@ -611,7 +611,7 @@ function CharmPhoto({
             <p className="t-mono truncate max-w-[14rem]">{image.name.toUpperCase()}</p>
             <button
               type="button"
-              className="link t-mono mt-1"
+              className="link t-mono inline-flex items-center min-h-11"
               onClick={() => {
                 onChange(null);
                 if (inputRef.current) inputRef.current.value = "";
