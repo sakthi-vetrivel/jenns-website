@@ -8,29 +8,37 @@ const links = [
   { href: "/order", label: "Order" },
 ] as const;
 
-export default function Nav() {
+/**
+ * `inset` is the hero variant: no outer padding, a hairline underneath,
+ * nav items separated by a slash, as in the approved mockup.
+ */
+export default function Nav({ inset = false }: { inset?: boolean }) {
   const pathname = usePathname();
   return (
-    <header className="flex items-center justify-between px-5 md:px-8 pt-8 pb-4">
-      <Link
-        href="/"
-        className="t-heading !text-[1.5rem] tracking-[0.12em] text-ink"
-        aria-label="Jenn, home"
-      >
+    <header
+      className={
+        inset
+          ? "flex items-center justify-between pb-5 border-b hairline"
+          : "flex items-center justify-between px-5 md:px-8 pt-8 pb-4"
+      }
+    >
+      <Link href="/" className="t-wordmark text-ink" aria-label="Jenn, home">
         JENN
       </Link>
-      <nav aria-label="Primary" className="flex gap-6">
-        {links.map((l) => {
+      <nav aria-label="Primary" className="flex items-center gap-3">
+        {links.map((l, i) => {
           const current = pathname.startsWith(l.href);
           return (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={current ? "page" : undefined}
-              className={`text-ink ${current ? "underline underline-offset-4 decoration-1" : ""}`}
-            >
-              {l.label}
-            </Link>
+            <span key={l.href} className="flex items-center gap-3">
+              {i > 0 && <span aria-hidden className="text-graphite">/</span>}
+              <Link
+                href={l.href}
+                aria-current={current ? "page" : undefined}
+                className={`text-ink ${current ? "underline underline-offset-4 decoration-1" : ""}`}
+              >
+                {l.label}
+              </Link>
+            </span>
           );
         })}
       </nav>

@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Young_Serif, Source_Serif_4, Courier_Prime } from "next/font/google";
+import { Libre_Caslon_Display, Source_Serif_4, Courier_Prime } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
 
-const youngSerif = Young_Serif({
+const libreCaslon = Libre_Caslon_Display({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-young-serif",
+  variable: "--font-libre-caslon",
   display: "swap",
 });
 
@@ -36,13 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${youngSerif.variable} ${sourceSerif.variable} ${courierPrime.variable} h-full`}
+      className={`${libreCaslon.variable} ${sourceSerif.variable} ${courierPrime.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

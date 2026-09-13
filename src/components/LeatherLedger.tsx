@@ -11,7 +11,7 @@ export default function LeatherLedger() {
     <section aria-labelledby="leathers" className="mt-3xl">
       <div className="px-5 md:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <h2 id="leathers" className="t-heading lg:col-span-5">
-          Six leathers. One notebook.
+          Ten leathers. One notebook.
         </h2>
         <p className="lg:col-span-5 lg:col-start-7 max-w-prose">
           Every cover is cut from full-grain, vegetable-tanned hide. It arrives
@@ -23,7 +23,7 @@ export default function LeatherLedger() {
       <div className="relative mt-16 aspect-[18/11] w-full">
         <Image
           src="/images/leathers-fan.jpg"
-          alt="Six leather traveler's notebooks fanned out: natural, saddle, cognac, mustard, cherry, and burgundy."
+          alt="Leather traveler's notebooks fanned out on linen."
           fill
           sizes="100vw"
           className="object-cover"
@@ -33,32 +33,16 @@ export default function LeatherLedger() {
       <ol>
         {LEATHERS.map((l, i) => (
           <li key={l.id} className="border-t hairline">
-            {l.photo ? (
-              <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[80vh]">
-                <div className="relative lg:col-span-7 min-h-[50vh]">
-                  <Image
-                    src={l.photo}
-                    alt={`A ${l.name.toLowerCase()} leather traveler's notebook.`}
-                    fill
-                    sizes="(min-width: 1024px) 58vw, 100vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="lg:col-span-4 lg:col-start-9 px-5 md:px-8 py-12 flex flex-col justify-end">
-                  <p className="t-mono text-graphite">0{i + 1}</p>
-                  <h3 className="t-heading mt-2">{l.name}</h3>
-                  <p className="t-mono mt-6">{l.ages.toUpperCase()}</p>
-                </div>
+            <div className="grid grid-cols-[3rem_1fr] lg:grid-cols-12 items-center gap-4 px-5 md:px-8 py-6">
+              <p className="t-mono text-graphite lg:col-span-1">{String(i + 1).padStart(2, "0")}</p>
+              <div className="flex items-center gap-5 lg:col-span-4">
+                <span className="relative block w-14 h-14 shrink-0 overflow-hidden rounded-sm">
+                  <Image src={l.swatch} alt="" fill sizes="56px" className="object-cover" />
+                </span>
+                <h3 className="t-heading !text-[1.75rem]">{l.name}</h3>
               </div>
-            ) : (
-              <div className="grid grid-cols-[3rem_1fr] lg:grid-cols-12 items-baseline gap-4 px-5 md:px-8 py-8">
-                <p className="t-mono text-graphite lg:col-span-1">0{i + 1}</p>
-                <h3 className="t-heading !text-[1.75rem] lg:col-span-4">{l.name}</h3>
-                <p className="t-mono col-start-2 lg:col-start-6 lg:col-span-6">
-                  {l.ages.toUpperCase()}
-                </p>
-              </div>
-            )}
+              <p className="t-mono col-start-2 lg:col-start-6 lg:col-span-6">{l.ages.toUpperCase()}</p>
+            </div>
           </li>
         ))}
       </ol>

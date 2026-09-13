@@ -4,11 +4,11 @@ name: Jenn's Notebooks
 description: A workbench in afternoon light. Sun-struck leather, ink on linen paper, few words, one object made by hand for one person.
 colors:
   primary: "#2F4390"          # fountain-pen blue: the single CTA, links, selected rings, focus
-  on-primary: "#F9F6EF"
+  on-primary: "#F9F6F1"
   primary-hover: "#243677"
-  surface: "#F9F6EF"          # insert paper: the order ticket, luggage-tag blocks
-  surface-2: "#E3DACB"        # suede: preview stage, hover states
-  background: "#F1ECE2"       # washed linen: the page ground
+  surface: "#F9F6F1"          # insert paper: the order ticket, luggage-tag blocks
+  surface-2: "#D6CCBC"        # suede: preview stage, hover states
+  background: "#F7F3EC"       # washed linen: the page ground
   text: "#1C1F2B"             # iron-gall ink, blue-black. Never pure black, never brown
   text-muted: "#6B675E"       # graphite
   rule: "#CFC6B3"             # 1px hairlines, ledger style
@@ -24,17 +24,17 @@ colors:
   leather-black: "#1A1613"
 typography:
   display:
-    fontFamily: "'Young Serif', Georgia, serif"
+    fontFamily: "'Libre Caslon Display', Georgia, serif"
     fontWeight: 400
-    fontSize: clamp(2rem, 5.6vw, 6rem)
-    lineHeight: 0.98
-    letterSpacing: -0.02em
+    fontSize: clamp(2.25rem, 6vw, 6.25rem)
+    lineHeight: 1.02
+    letterSpacing: -0.005em
   heading:
-    fontFamily: "'Young Serif', Georgia, serif"
+    fontFamily: "'Libre Caslon Display', Georgia, serif"
     fontWeight: 400
     fontSize: clamp(1.75rem, 3.5vw, 3rem)
     lineHeight: 1.05
-    letterSpacing: -0.01em
+    letterSpacing: 0
   body:
     fontFamily: "'Source Serif 4', Georgia, serif"
     fontWeight: 400
@@ -126,7 +126,7 @@ components:
 
 **Creative North Star:** Luxury/Refined warmed by Organic. A workbench in afternoon light: one hand-made leather notebook, sun-struck and honest, on a page that reads like paper and ink. The memorable thing is "an heirloom object, made by hand for you," so every screen shows one object, says little, and leaves a blank for the visitor's name.
 
-**Product context:** A marketing and custom-order site for Jenn, who hand-makes leather traveler's notebooks (leather cover, elastic cord closure, refillable inserts, optional stone charm, optional hand-stamped initials). Six saturated leathers today: natural, cognac, mustard, cherry, burgundy, black. Customers configure an order, submit it, and pay by Venmo; every order lands in a Google Sheet Jenn owns. No cart, no checkout. Static site on Vercel. Buyers are mostly women 25 to 45 who journal, plan, and travel, and who arrive from Instagram on a phone in daylight. Peers: Louise Carmen (Paris, restrained, all-Garamond), Dôen (California, sun-bleached editorial), Chic Sparrow and Foxy Fix (American craft Shopify).
+**Product context:** A marketing and custom-order site for Jenn, who hand-makes leather traveler's notebooks (leather cover, elastic cord closure, refillable inserts, optional stone charm, optional hand-stamped initials). Ten leathers today: sand, ochre, saddle, terracotta, cherry, chestnut, plum, green, forest, black. Cords come in every color of the rainbow at no charge. Customers configure an order, submit it, and pay by Venmo; every order lands in a Google Sheet Jenn owns. No cart, no checkout. Static site on Vercel. Buyers are mostly women 25 to 45 who journal, plan, and travel, and who arrive from Instagram on a phone in daylight. Peers: Louise Carmen (Paris, restrained, all-Garamond), Dôen (California, sun-bleached editorial), Chic Sparrow and Foxy Fix (American craft Shopify).
 
 **Mode per surface:**
 - Home: Persuade. One object per viewport, the constraint said out loud, one link.
@@ -141,7 +141,7 @@ components:
 **Key characteristics:**
 - A photograph too big and too honest to be stock, owning 60% of the first viewport.
 - Blue-black ink on washed linen. The UI has no brown; the leather brings every warm color.
-- A chunky upright serif set huge, once per screen, with its last word touching the photo.
+- A calm Caslon display set big, once per screen, with its last word crossing onto the photo and knocking out to paper where it does.
 - Hairline ledger rules and a typewriter face for the order number, price, and queue.
 - Nothing centered except the confirmation ticket.
 
@@ -162,13 +162,13 @@ Named rules:
 
 Type comes from the object's world: a notebook, a brass stamp, a receipt.
 
-- **Young Serif** is the display voice. A chunky, low-contrast old-style with soft terminals, from the world of 1970s paperback jackets and hand-cut lettering. It looks like something you could strike into leather. One weight, upright only; there is no italic, which is the point. Set it huge (the `display` token) once per screen, or as `heading` for section titles. Never in body text, never in the ticket.
+- **Libre Caslon Display** is the display voice. A refined Caslon cut for large sizes, from the world of Dôen's Founders Caslon and old English book title pages: moderate contrast, bracketed serifs, calm and expensive. One weight, upright only; the italic is never used. Set it big (the `display` token) once per screen, or as `heading` for section titles, and as the tracked wordmark. Never in body text, never in the ticket. Young Serif was the first pick; the approved mockups rendered a lighter Caslon-like face and the site follows the mockups.
 - **Source Serif 4** is body and label. A modern book face with optical sizes, so it holds up at 17px on a phone and at 12px tracked uppercase for labels. Labels are the Dôen and Louise Carmen convention: tiny, uppercase, tracked 0.08em. Use weight 500 for labels and 400 for reading; do not use 600 or 700.
 - **Courier Prime** is the mono, and it is fenced. It appears only where the site behaves like a receipt: order numbers, prices, the live queue, the luggage-tag block on the hero, section numbers on the ticket, the running total, and the confirmation. If Courier appears in a headline, a nav item, or a paragraph, that is a bug. A typewriter face reads cheap the moment it leaks.
 
-Loading: Google Fonts, one `<link>` with `display=swap`, families `Young+Serif`, `Source+Serif+4:opsz,wght@8..60,400;8..60,500`, `Courier+Prime:wght@400;700`. Preconnect to fonts.gstatic.com. Fallback stack is Georgia so a slow load still reads as a book.
+Loading: Google Fonts, one `<link>` with `display=swap`, families `Libre+Caslon+Display`, `Source+Serif+4:opsz,wght@8..60,400;8..60,500`, `Courier+Prime:wght@400;700`. Preconnect to fonts.gstatic.com. Fallback stack is Georgia so a slow load still reads as a book.
 
-Scale: display is a `clamp` from 32px on a phone to 96px on desktop; heading from 28px to 48px; body 17px; label 12px; mono 13px. Levels differ by more than a weight. Nothing sits within a step of body size.
+Scale: display is a `clamp` from 36px on a phone to 100px on desktop; heading from 28px to 48px; body 17px; label 12px; mono 13px. Levels differ by more than a weight. Nothing sits within a step of body size.
 
 No exceptions were made to the overused list. EB Garamond was rejected because Louise Carmen uses it and copying the reference is not a design.
 
@@ -176,7 +176,7 @@ No exceptions were made to the overused list. EB Garamond was rejected because L
 
 Creative-editorial. A 12-column grid on desktop that every composition breaks asymmetrically: 5/7 for the hero, 55/45 for the order page, 4/8 for text beside a photo. Max content width 1280px with 32px gutters on desktop, 24px on tablet, 20px on phone. Density is low: sections are padded 96px to 160px (`3xl` to `4xl`); the ticket interior uses 16px and 24px. Big step between sections, small step inside a ticket.
 
-- **Home hero:** the photograph owns the right 60% of the viewport, full-bleed to the edge, hard shadow falling left. Wordmark "JENN" small top-left in Young Serif; nav is two words top-right: Notebooks / Order. The headline sits lower-left in three short lines and its last word overlaps the photo edge by a few characters, so type and object touch. One link under it: "Make yours →". Bottom-right, pinned like a luggage tag, a mono block on `surface`: order number, leather, size, `MADE FOR ______`.
+- **Home hero:** two panels the full height of the viewport. The photograph owns the right 58%, full-bleed to the top, bottom, and right edges, hard shadow falling left. The left panel is the page: it holds the header (tracked wordmark "JENN" left, "Notebooks / Order" right, a hairline under both), the headline, the link, and the tag above a hairline at the bottom. No header spans the page on the home screen. The headline sits lower-left in three short lines and its last word overlaps the photo edge by a few characters, so type and object touch. One link under it: "Make yours →". Bottom-right, pinned like a luggage tag, a mono block on `surface`: order number, leather, size, `MADE FOR ______`.
 - **Below the fold:** no product grid. One leather per viewport, each a full-bleed photograph with a mono note on how it ages. Between them, one mono receipt block that says the constraint out loud: no cart, no checkout, you tell me what you want, I make it, you Venmo me. Under it the live queue from the sheet.
 - **Order page ("the cutting table"):** left 55% is a sticky preview stage on `surface-2` with a large photo of the current configuration and a mono caption. Right 45% is one long scrolling ticket on `surface`, sections numbered in mono with hairline rules between them. A fixed footer strip carries the total in mono on the left and the one primary button on the right. On phones the preview collapses to a sticky 180px strip at the top and the ticket runs full width.
 - **Mobile:** the hero stacks photo above headline, still left-aligned, photo full-bleed. Nav stays two words; no hamburger.
@@ -208,7 +208,7 @@ Square by default. Radius hierarchy: `none` for the ticket, inputs, and photogra
 
 The form asks exactly these, in this order. Each is a numbered section on the ticket.
 
-1. **01 Leather:** which color. Photo swatches: natural, cognac, mustard, cherry, burgundy, black (grow this list from the sheet).
+1. **01 Choose your leather:** which color. Photo swatches for the ten leathers, recolored from one real hide until Jenn shoots each one.
 2. **02 Size:** Full size ($75), Passport ($50), or Keychain ($15). Text options with dimensions and price in mono under each.
 3. **03 Edges:** Rounded corners, yes or no. Two text options.
 4. **04 Cord:** which color, no charge. Round color dots.
@@ -228,9 +228,9 @@ Every component designs its empty, loading, error, and long-content states. A ti
 - Do: left-align everything; the only centered composition is the confirmation ticket.
 - Do: use real leather photographs as swatches, cropped square, color-graded to the site's light.
 - Do: say the constraint plainly in Jenn's voice: no cart, Venmo, made by hand, confirmed within a day.
-- Don't: use any brown, tan, or terracotta in the UI. If it isn't a photograph, it isn't brown.
+- Don't: use any brown, tan, or terracotta in the UI. If it isn't a photograph, it isn't brown. Leather and cord swatches are the only exception, because they are the product.
 - Don't: build a product grid, a three-column feature row, icons in circles, a testimonial carousel, or a stats row.
-- Don't: use an italic anywhere in display or heading. Young Serif has none and Source Serif 4's italic is for citations in body text only.
+- Don't: use an italic anywhere in display or heading. Source Serif 4's italic is for citations in body text only.
 - Don't: add CSS leather grain, kraft-paper textures, wax seals, stitched borders, script fonts, or dried-flower photography.
 - Don't: crossfade swatch changes, fade sections in on scroll, zoom photos on hover, or add parallax. The only motion is the two moments below.
 - Don't: use "Get started," "Learn more," "Explore," "Seamless," or "Handcrafted with love." Name the outcome: "Make yours," "Reserve my notebook."
@@ -249,9 +249,10 @@ Every component designs its empty, loading, error, and long-content states. A ti
 |------|----------|-----------|
 | 2026-09-12 | Initial design system created | Created by /design-consultation from research on Louise Carmen, Dôen, and Chic Sparrow, plus an independent subagent direction. User confirmed the memorable thing as "an heirloom object, made by hand for you." |
 | 2026-09-12 | Ink-blue accent, no brown in the UI | Every leather shop is cream and brown; Jenn's leathers are saturated (mustard, cherry, burgundy), so the UI stays paper-and-ink and the photographs own all color. |
-| 2026-09-12 | Young Serif display, Source Serif 4 body, Courier Prime fenced to the ticket | Object-world faces: a stamp, a book, a receipt. Subagent proposed a grotesk body; overruled because the reference world is all-serif and "heirloom" reads better in a book face. |
+| 2026-09-12 | Young Serif display (superseded below), Source Serif 4 body, Courier Prime fenced to the ticket | Object-world faces: a stamp, a book, a receipt. Subagent proposed a grotesk body; overruled because the reference world is all-serif and "heirloom" reads better in a book face. |
 | 2026-09-12 | Home hero: mockup A approved; order page: mockup B approved | User: "A is really beautiful." Headline overlaps the photo edge; tag pinned bottom-right. |
 | 2026-09-12 | Page-turn animation on "Make yours" opens the order flow | User request. Replaces the stamp settle as the primary authored moment; stamp kept as secondary. |
+| 2026-09-12 | Site brought back to the approved mockups: Libre Caslon Display replaces Young Serif, header moves inside the hero's left panel, photo runs full height, headline knocks out to paper over the photo, order page gets the centered stage, ticket edge, and photo preview. Ten leathers and rainbow cords from Jenn. | User: "the site looks nothing like the mockup." The mockups are the approved truth; tokens re-measured from them. |
 | 2026-09-12 | Prices from Jenn: full $75, passport $50, keychain $15, charm and stamp $5 each, cord free, stamp up to 3 letters | Jenn's message, 2026-09-12. Keychain added as a third size. |
 | 2026-09-12 | Charm section takes a description and an optional photo, stored in Drive | User request. Keeps every order artifact inside Jenn's Google account. |
 | 2026-09-12 | Order ticket fields fixed at eight numbered sections | User-supplied list: leather, size (full/passport), rounded edges, cord color, charm (spine/front), stamp (initials, where), contact + delivery (Noe Valley Town Square meetup or address), Venmo payment statement. |

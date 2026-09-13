@@ -2,9 +2,9 @@
 
 /* Tokens from DESIGN.md. Do not add colors here without updating DESIGN.md. */
 :root {
-  --linen: #f1ece2;
-  --paper: #f9f6ef;
-  --suede: #e3dacb;
+  --linen: #f7f3ec;
+  --paper: #f9f6f1;
+  --suede: #d6ccbc;
   --ink: #1c1f2b;
   --graphite: #6b675e;
   --pen: #2f4390;
@@ -28,7 +28,7 @@
   --color-ochre: var(--ochre);
   --color-oxblood: var(--oxblood);
 
-  --font-display: var(--font-young-serif), Georgia, serif;
+  --font-display: var(--font-libre-caslon), Georgia, serif;
   --font-body: var(--font-source-serif), Georgia, serif;
   --font-mono: var(--font-courier-prime), "Courier New", monospace;
 
@@ -57,16 +57,22 @@ body {
 .t-display {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2rem, 5.6vw, 6rem);
-  line-height: 0.98;
-  letter-spacing: -0.02em;
+  font-size: clamp(2.25rem, 6vw, 6.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.005em;
 }
 .t-heading {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(1.75rem, 3.5vw, 3rem);
   line-height: 1.05;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
+}
+.t-wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.375rem;
+  letter-spacing: 0.18em;
 }
 .t-label {
   font-family: var(--font-body);
@@ -221,3 +227,27 @@ body {
 /* Total tick */
 @keyframes tick { 0% { color: var(--pen); } 100% { color: var(--ink); } }
 .tick { animation: tick 150ms ease-out; }
+
+/* Ticket: perforated top and bottom edges, like a receipt torn off a roll */
+.ticket-edge {
+  --tooth: 14px;
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent calc(var(--tooth) / 2 - 1px), #000 calc(var(--tooth) / 2)) top / var(--tooth) calc(var(--tooth) / 2) repeat-x,
+    radial-gradient(circle at 50% 100%, transparent calc(var(--tooth) / 2 - 1px), #000 calc(var(--tooth) / 2)) bottom / var(--tooth) calc(var(--tooth) / 2) repeat-x,
+    linear-gradient(#000, #000) center / 100% calc(100% - var(--tooth)) no-repeat;
+  mask:
+    radial-gradient(circle at 50% 0, transparent calc(var(--tooth) / 2 - 1px), #000 calc(var(--tooth) / 2)) top / var(--tooth) calc(var(--tooth) / 2) repeat-x,
+    radial-gradient(circle at 50% 100%, transparent calc(var(--tooth) / 2 - 1px), #000 calc(var(--tooth) / 2)) bottom / var(--tooth) calc(var(--tooth) / 2) repeat-x,
+    linear-gradient(#000, #000) center / 100% calc(100% - var(--tooth)) no-repeat;
+}
+
+/* Outlined option box (size picker) */
+.option-box {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: 14px 18px;
+  text-align: center;
+  min-width: 8.5rem;
+  transition: border-color 150ms ease-out;
+}
+.option-box[aria-pressed="true"] { border-color: var(--pen); box-shadow: inset 0 0 0 1px var(--pen); }

@@ -81,29 +81,37 @@ export default function OrderForm() {
     .join(" / ");
 
   return (
-    <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[55fr_45fr]">
+    <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] bg-suede">
       {/* The cutting table: sticky preview stage */}
-      <aside className="bg-suede lg:sticky lg:top-0 lg:h-screen flex flex-col justify-between px-5 md:px-8 py-6 lg:py-10 sticky top-0 z-10 max-h-[180px] lg:max-h-none overflow-hidden">
-        <div className="hidden lg:block">
-          <h1 className="t-display">Make yours.</h1>
-        </div>
-        <div className="relative flex-1 my-4 lg:my-10 min-h-[120px]">
+      <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] lg:max-h-none overflow-hidden">
+        <p className="t-label text-graphite text-center hidden lg:block">
+          Jenn&rsquo;s handmade
+          <br />
+          leather traveler&rsquo;s notebooks
+        </p>
+        <h1 className="t-display text-center mt-4 hidden lg:block">Make yours.</h1>
+        <div className="relative flex-1 my-3 lg:my-8 min-h-[140px]">
           <Preview leather={leather} cord={cord} order={order} />
         </div>
-        <p className="t-mono text-graphite truncate">{caption}</p>
+        <p className="t-mono text-graphite text-center truncate">{caption}</p>
       </aside>
 
       {/* The ticket */}
-      <div className="bg-paper border-l hairline px-5 md:px-10 pt-10 pb-40">
-        <h1 className="t-heading lg:hidden mb-8">Make yours.</h1>
+      <div className="lg:py-8 lg:pr-8">
+        <div className="ticket-edge bg-paper px-5 md:px-10 pt-10 pb-40 lg:pb-32">
+          <div className="flex items-baseline justify-between pb-6 border-b hairline">
+            <span className="t-label text-graphite">Order no.</span>
+            <span className="t-mono">{orderNumber || "JN-______"}</span>
+          </div>
+          <h1 className="t-heading lg:hidden mt-8">Make yours.</h1>
 
-        <Section n="01" title="Leather" error={errors.leather}>
+        <Section n="01" title="Choose your leather" error={errors.leather}>
           <div className="flex flex-wrap gap-4">
             {LEATHERS.map((l) => (
               <button
                 key={l.id}
                 type="button"
-                className="swatch w-16 h-16 md:w-[72px] md:h-[72px] relative overflow-hidden"
+                className="swatch w-16 h-16 md:w-[72px] md:h-[72px] relative overflow-hidden rounded-sm"
                 style={{ background: l.tint }}
                 aria-pressed={order.leather === l.id}
                 aria-label={l.name}
@@ -117,15 +125,26 @@ export default function OrderForm() {
           <p className="t-mono text-graphite mt-4">{leather ? leather.name.toUpperCase() : "PICK ONE"}</p>
         </Section>
 
-        <Section n="02" title="Size" error={errors.size}>
-          <Choice
-            options={SIZES.map((s) => ({ id: s.id, label: s.name, hint: `${s.dims} · $${s.price}` }))}
-            value={order.size}
-            onChange={(v) => set("size", v as Order["size"])}
-          />
+        <Section n="02" title="Choose your size" error={errors.size}>
+          <div className="flex flex-wrap gap-3">
+            {SIZES.map((sz) => (
+              <button
+                key={sz.id}
+                type="button"
+                className="option-box"
+                aria-pressed={order.size === sz.id}
+                onClick={() => set("size", sz.id)}
+              >
+                <span className="t-label block">{sz.name}</span>
+                <span className="t-mono text-graphite block mt-1">
+                  {sz.dims} · ${sz.price}
+                </span>
+              </button>
+            ))}
+          </div>
         </Section>
 
-        <Section n="03" title="Edges">
+        <Section n="03" title="Corners">
           <Choice
             options={[
               { id: "square", label: "Square corners" },
@@ -136,7 +155,7 @@ export default function OrderForm() {
           />
         </Section>
 
-        <Section n="04" title="Cord" hint="Any color, no charge." error={errors.cord}>
+        <Section n="04" title="Choose your cord" hint="Any color, no charge." error={errors.cord}>
           <div className="flex flex-wrap gap-4">
             {CORDS.map((c) => (
               <button
@@ -156,7 +175,7 @@ export default function OrderForm() {
 
         <Section
           n="05"
-          title="Charm"
+          title="Add a charm"
           hint={`A small stone or trinket on the cord. +$${CHARM_PRICE}.`}
           error={errors.charmPlacement || errors.charmDescription || errors.charmImage}
         >
@@ -209,7 +228,7 @@ export default function OrderForm() {
 
         <Section
           n="06"
-          title="Stamp"
+          title="Add a stamp"
           hint={`Up to ${STAMP_MAX} letters, pressed into the leather by hand. +$${STAMP_PRICE}.`}
           error={errors.stampText || errors.stampPlacement}
         >
@@ -253,7 +272,7 @@ export default function OrderForm() {
           </Expand>
         </Section>
 
-        <Section n="07" title="You" error={errors.name || errors.email || errors.delivery || errors.address}>
+        <Section n="07" title="Where it goes" error={errors.name || errors.email || errors.delivery || errors.address}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Name" error={errors.name}>
               <input
@@ -327,10 +346,11 @@ export default function OrderForm() {
             {serverError.toUpperCase()} NOTHING WAS CHARGED.
           </p>
         )}
+        </div>
       </div>
 
       {/* Fixed total bar */}
-      <div className="fixed bottom-0 inset-x-0 lg:left-[55%] bg-paper border-t hairline px-5 md:px-10 py-4 flex items-center justify-between gap-4 z-20">
+      <div className="fixed bottom-0 inset-x-0 lg:left-[55%] lg:right-8 bg-paper border-t hairline px-5 md:px-10 py-4 flex items-center justify-between gap-4 z-20">
         <p key={total} className="t-mono tick">
           TOTAL ${total}
           <span className="hidden md:inline"> · PAY BY VENMO AFTER CONFIRMATION</span>
@@ -352,58 +372,64 @@ function Preview({
   cord?: (typeof CORDS)[number];
   order: Order;
 }) {
-  const passport = order.size === "passport";
   const keychain = order.size === "keychain";
-  const radius = order.roundedEdges ? 14 : 3;
+  const passport = order.size === "passport";
+  const scale = keychain ? 0.42 : passport ? 0.7 : 0.86;
+  const src = leather?.preview ?? "/images/notebook-sand.webp";
   return (
     <div className="absolute inset-0 flex items-center justify-center">
+      {/* The notebook photo (Jenn's, background removed, recolored per leather) */}
       <div
-        className="relative shadow-none transition-none"
-        style={{
-          width: keychain ? "22%" : passport ? "38%" : "44%",
-          aspectRatio: keychain ? "1 / 1.5" : passport ? "3.5 / 5.5" : "4.33 / 8.25",
-          maxHeight: "100%",
-          background: leather?.tint ?? "#C99C6B",
-          borderRadius: radius,
-          opacity: leather ? 1 : 0.45,
-        }}
+        className="relative"
+        style={{ height: `${scale * 100}%`, aspectRatio: "0.74", maxWidth: "100%", opacity: leather ? 1 : 0.5 }}
         aria-hidden
       >
+        <Image src={src} alt="" fill sizes="45vw" className="object-contain drop-shadow-[-18px_22px_16px_rgba(40,32,24,0.28)]" />
         {/* cord */}
         <div
-          className="absolute inset-x-0"
+          className="absolute"
           style={{
-            top: "48%",
-            height: 3,
-            background: cord?.color ?? "rgba(28,31,43,0.25)",
+            left: "14%",
+            right: "13%",
+            top: "43.5%",
+            height: keychain ? 2 : 3,
+            background: cord?.color ?? "rgba(28,31,43,0.3)",
+            borderRadius: 2,
+            boxShadow: "0 1px 1px rgba(0,0,0,0.25)",
           }}
         />
         {order.charm && (
           <div
             className="absolute rounded-full"
             style={{
-              top: "calc(48% - 7px)",
-              left: order.charmPlacement === "spine" ? "6%" : "44%",
-              width: 16,
-              height: 16,
-              background: "#E9E4DA",
-              border: "1px solid rgba(28,31,43,0.4)",
+              top: "calc(43.5% - 9px)",
+              left: order.charmPlacement === "spine" ? "12%" : "47%",
+              width: 20,
+              height: 20,
+              background: "radial-gradient(circle at 35% 35%, #F4EFE6, #C9C0B2)",
+              border: "1px solid rgba(120,100,60,0.6)",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.35)",
             }}
           />
         )}
         {order.stamp && order.stampText.trim() && (
           <p
-            className="deboss t-mono absolute"
+            className="deboss t-mono absolute text-[0.95rem] tracking-[0.2em]"
             style={
               order.stampPlacement === "spine"
-                ? { left: 6, top: "50%", transform: "rotate(-90deg) translateX(-50%)", transformOrigin: "left top", whiteSpace: "nowrap" }
-                : { right: 10, bottom: 10, whiteSpace: "nowrap" }
+                ? { left: "11%", top: "58%", transform: "rotate(-90deg)", transformOrigin: "left top", whiteSpace: "nowrap" }
+                : order.stampPlacement === "inside"
+                  ? { left: "50%", bottom: "8%", transform: "translateX(-50%)", opacity: 0.5, whiteSpace: "nowrap" }
+                  : { right: "14%", bottom: "9%", whiteSpace: "nowrap" }
             }
           >
             {order.stampText.trim().toUpperCase()}
           </p>
         )}
       </div>
+      {!leather && (
+        <p className="t-mono text-graphite absolute bottom-2 left-0 right-0 text-center">START WITH A LEATHER</p>
+      )}
     </div>
   );
 }
