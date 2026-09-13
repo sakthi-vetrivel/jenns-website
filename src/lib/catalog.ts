@@ -109,6 +109,14 @@ export function venmoUrl(amount: number, memo: string): string {
   return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(memo)}`;
 }
 
+/**
+ * How an order leaves the site. "email" opens the customer's mail app with the
+ * whole order filled in (to Jenn, subject, body) and asks them to pay on Venmo;
+ * no server involved. "sheet" posts to /api/order and the Google Sheet issues
+ * the number. Email is the default until the sheet's web app is public.
+ */
+export const ORDER_MODE: "email" | "sheet" = process.env.NEXT_PUBLIC_ORDER_MODE === "sheet" ? "sheet" : "email";
+
 /** Static for now; later read from the same Google Sheet the orders land in. */
 export const QUEUE = {
   nowMaking: "141",

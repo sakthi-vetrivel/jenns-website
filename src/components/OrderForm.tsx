@@ -13,6 +13,7 @@ import {
   DELIVERY,
   dims,
   LEATHERS,
+  ORDER_MODE,
   SIZES,
   STAMP_MAX,
   STAMP_PLACEMENTS,
@@ -32,7 +33,7 @@ import {
   type Order,
 } from "@/lib/order";
 
-type Phase = "editing" | "submitting" | "confirmed";
+type Phase = "editing" | "submitting" | "confirmed" | "emailed";
 
 export default function OrderForm() {
   const [order, setOrder] = useState<Order>(EMPTY_ORDER);
@@ -65,6 +66,14 @@ export default function OrderForm() {
       });
       return;
     }
+    if (ORDER_MODE === "email") {
+      // No server: hand the order to the customer's mail app, then show the ticket
+      // with the same email and Venmo buttons in case the app didn't open.
+      setPhase("emailed");
+      window.scrollTo({ top: 0 });
+      window.location.href = receiptMailto(CONTACT.email, order, total);
+      return;
+    }
     setPhase("submitting");
     setServerError("");
     setFailed(false);
@@ -93,6 +102,24 @@ export default function OrderForm() {
 
   if (phase === "confirmed") {
     return <Confirmation order={order} orderNumber={orderNumber} total={total} />;
+  }
+  if (phase === "emailed") {
+    return (
+      <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
+        <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12">
+          <p className="t-mono text-graphite">ALMOST THERE</p>
+          <h1 className="t-heading mt-3">Send it, then pay</h1>
+          <EmailReceipt order={order} total={total} mode="primary" />
+          <button
+            type="button"
+            className="link t-mono inline-flex items-center min-h-11 mt-6"
+            onClick={() => setPhase("editing")}
+          >
+            ← BACK TO THE TICKET
+          </button>
+        </div>
+      </section>
+    );
   }
 
   const caption = [
@@ -398,7 +425,7 @@ export default function OrderForm() {
           <p className="t-heading">${total}</p>
         </div>
         <button type="submit" className="btn-inverse" disabled={phase === "submitting"}>
-          {phase === "submitting" ? "Reserving…" : "Reserve & pay with Venmo"}
+          {phase === "submitting" ? "Reserving…" : ORDER_MODE === "email" ? "Reserve by email" : "Reserve & pay with Venmo"}
         </button>
       </div>
     </form>
@@ -769,13 +796,17 @@ function Field({ label, error, children }: { label: string; error?: string; chil
  * confirmation, plus a button that opens mail to Jenn with the whole order
  * in the body, so nothing is lost while the sheet is down.
  */
-function EmailReceipt({ order, total }: { order: Order; total: number }) {
+/**
+ * `mode` picks the copy: "primary" is the normal email flow (the mail app
+ * just opened), "fallback" is the sheet being down.
+ */
+function EmailReceipt({ order, total, mode = "fallback" }: { order: Order; total: number; mode?: "primary" | "fallback" }) {
   if (!CONTACT.email) return null;
   const mailto = receiptMailto(CONTACT.email, order, total);
   const memo = `Notebook for ${order.name.trim()}`;
   const venmo = venmoUrl(total, memo);
   return (
-    <div id="email-receipt" className="mt-6 border hairline p-5 md:p-6">
+    <div id="email-receipt" className={mode === "primary" ? "mt-8" : "mt-6 border hairline p-5 md:p-6"}>
       <p className="t-mono text-graphite">YOUR ORDER</p>
       <dl className="t-mono mt-4 border-t hairline">
         {specLines(order).map(([k, v]) => (
@@ -790,8 +821,10 @@ function EmailReceipt({ order, total }: { order: Order; total: number }) {
         </div>
       </dl>
       <p className="mt-4 max-w-prose">
-        My order sheet isn&rsquo;t answering, so let&rsquo;s do this by hand. Screenshot these order
-        details and send them to <span className="t-mono">{CONTACT.email}</span>
+        {mode === "primary"
+          ? "Your mail app should have opened with this order filled in, addressed to me. Send it"
+          : "My order sheet isn\u2019t answering, so let\u2019s do this by hand. Screenshot these order details and send them to "}
+        {mode === "fallback" && <span className="t-mono">{CONTACT.email}</span>}
         {order.charm && order.charmImage ? " along with your charm photo" : ""}, then send{" "}
         <span className="t-mono">${total}</span> to <span className="t-mono">@{VENMO_HANDLE}</span> on
         Venmo with <span className="t-mono">{memo}</span> as the memo. I&rsquo;ll confirm within a day and
@@ -805,7 +838,10 @@ function EmailReceipt({ order, total }: { order: Order; total: number }) {
           Pay ${total} to @{VENMO_HANDLE} on Venmo
         </a>
       </div>
-      <p className="t-mono text-graphite mt-3">THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED.</p>
+      <p className="t-mono text-graphite mt-3">
+        {mode === "primary" ? "MAIL DIDN\u2019T OPEN? THE EMAIL BUTTON TRIES AGAIN, OR WRITE TO " : "THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED. "}
+        {mode === "primary" && <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>}
+      </p>
     </div>
   );
 }

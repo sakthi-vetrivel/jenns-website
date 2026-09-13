@@ -21,6 +21,16 @@ npm run dev
 - `/order` the ticket: leather, size, edges, cord, charm, stamp, contact + delivery, payment
 - `POST /api/order` validates and forwards one row to the sheet
 
+## Orders, for now: by email
+
+`NEXT_PUBLIC_ORDER_MODE` picks how an order leaves the site. Unset (or
+`email`) is the MVP: "Reserve by email" validates the ticket, opens the
+customer's mail app addressed to Jenn with the subject and the whole order
+in the body, and shows a page with the ticket, an email button (in case the
+app didn't open) and a Venmo button for the total. No server, no sheet.
+Set it to `sheet` in Vercel once the Apps Script web app is public and
+`/api/order` answers `ok: true`; the sheet path below takes over.
+
 ## Orders → Google Sheet
 
 `google/Code.gs` has the Apps Script and a five-step setup. The site posts

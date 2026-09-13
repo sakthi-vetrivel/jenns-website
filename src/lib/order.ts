@@ -9,6 +9,7 @@ import {
   STAMP_MAX,
   STAMP_PLACEMENTS,
   STAMP_PRICE,
+  VENMO_HANDLE,
 } from "./catalog";
 
 export type Order = {
@@ -183,6 +184,7 @@ export function receiptText(o: Order, total: number): string {
     if (where) lines.push(`STAMP PLACEMENT: ${where.toUpperCase()}`);
   }
   lines.push(`TOTAL: $${total}`);
+  lines.push(`VENMO: $${total} to @${VENMO_HANDLE}, memo "Notebook for ${o.name.trim()}"`);
   lines.push("");
   lines.push(`NAME: ${o.name.trim()}`);
   lines.push(`EMAIL: ${o.email.trim()}`);
