@@ -153,7 +153,11 @@ button:disabled {
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  transition: background-color 150ms ease-out, transform 50ms ease-out;
 }
+.btn-ghost:hover { background: var(--suede); }
+.btn-ghost:active { transform: translateY(1px); }
+.btn-ghost:disabled { opacity: 0.4; }
 
 .input {
   background: var(--paper);
