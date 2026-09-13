@@ -300,7 +300,7 @@ export default function OrderForm() {
           </Expand>
         </Section>
 
-        <Section n="07" title="Where it goes" error={errors.name || errors.email || errors.delivery || errors.address}>
+        <Section n="07" title="Where it goes" error={errors.delivery}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Name" error={errors.name}>
               <input
@@ -740,7 +740,11 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     <label className="block">
       <span className="t-label text-graphite">{label}</span>
       <div className="mt-2">{children}</div>
-      {error && <span className="t-mono text-oxblood block mt-2">{error.toUpperCase()}</span>}
+      {error && (
+        <span className="t-mono text-oxblood block mt-2" role="alert">
+          {error.toUpperCase()}
+        </span>
+      )}
     </label>
   );
 }
