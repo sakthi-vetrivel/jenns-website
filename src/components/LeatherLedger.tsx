@@ -22,8 +22,8 @@ export default function LeatherLedger() {
 
       <div className="relative mt-16 aspect-[18/11] w-full">
         <Image
-          src="/images/leathers-fan.jpg"
-          alt="Leather traveler's notebooks fanned out on linen."
+          src="/images/fan-ten.jpg"
+          alt="Ten leather traveler's notebooks fanned out on linen: sand, ochre, saddle, terracotta, cherry, chestnut, plum, green, forest, and black."
           fill
           priority
           sizes="100vw"
