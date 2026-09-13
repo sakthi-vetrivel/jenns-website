@@ -774,10 +774,12 @@ function Field({ label, error, children }: { label: string; error?: string; chil
  */
 function EmailReceipt({ order, total, orderNumber }: { order: Order; total: number; orderNumber?: string }) {
   if (!CONTACT.email) return null;
-  const href = receiptMailto(CONTACT.email, order, total, orderNumber);
+  const mailto = receiptMailto(CONTACT.email, order, total, orderNumber);
+  const memo = orderNumber ?? order.name.trim();
+  const venmo = venmoUrl(total, memo);
   return (
     <div id="email-receipt" className="mt-6 border hairline p-5 md:p-6">
-      <p className="t-mono text-graphite">YOUR ORDER, TO SEND BY EMAIL INSTEAD</p>
+      <p className="t-mono text-graphite">YOUR ORDER</p>
       {orderNumber && <p className="t-heading mt-2">{orderNumber}</p>}
       <dl className="t-mono mt-4 border-t hairline">
         {specLines(order).map(([k, v]) => (
@@ -792,16 +794,22 @@ function EmailReceipt({ order, total, orderNumber }: { order: Order; total: numb
         </div>
       </dl>
       <p className="mt-4 max-w-prose">
-        The order sheet isn&rsquo;t answering. Send this to me by email and I&rsquo;ll reply with how to
-        pay. Everything above goes in the message, so just hit send
-        {order.charm && order.charmImage ? " and attach your charm photo" : ""}.
+        My order sheet isn&rsquo;t answering, so let&rsquo;s do this by hand. Screenshot these order
+        details and send them to <span className="t-mono">{CONTACT.email}</span>
+        {order.charm && order.charmImage ? " along with your charm photo" : ""}, then send{" "}
+        <span className="t-mono">${total}</span> to <span className="t-mono">@{VENMO_HANDLE}</span> on
+        Venmo with <span className="t-mono">{memo}</span> as the memo. I&rsquo;ll confirm within a day and
+        start cutting.
       </p>
-      <a href={href} className="btn-primary inline-block mt-5">
-        Email this order to Jenn
-      </a>
-      <p className="t-mono text-graphite mt-3">
-        OR WRITE TO <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>
-      </p>
+      <div className="flex flex-wrap gap-3 mt-5">
+        <a href={mailto} className="btn-primary inline-block">
+          Email these details to Jenn
+        </a>
+        <a href={venmo} className="btn-primary inline-block" target="_blank" rel="noopener">
+          Pay ${total} to @{VENMO_HANDLE} on Venmo
+        </a>
+      </div>
+      <p className="t-mono text-graphite mt-3">THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED.</p>
     </div>
   );
 }
