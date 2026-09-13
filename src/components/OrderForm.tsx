@@ -10,6 +10,7 @@ import {
   CHARM_PRICE,
   CORDS,
   DELIVERY,
+  dims,
   LEATHERS,
   SIZES,
   STAMP_MAX,
@@ -87,12 +88,15 @@ export default function OrderForm() {
     <form onSubmit={submit} noValidate className="grid grid-cols-1 lg:grid-cols-[46fr_54fr] xl:grid-cols-[55fr_45fr] bg-suede">
       {/* The cutting table: sticky preview stage */}
       <aside className="lg:sticky lg:top-0 lg:h-screen flex flex-col px-5 md:px-12 py-6 lg:py-10 sticky top-0 z-10 max-h-[200px] md:max-h-[300px] lg:max-h-none overflow-hidden">
-        <p className="t-label text-graphite text-center hidden lg:block">
-          Jenn&rsquo;s handmade
-          <br />
-          leather traveler&rsquo;s notebooks
-        </p>
-        <h1 className="t-display text-center mt-4 hidden lg:block">Make yours.</h1>
+        <p className="t-label text-graphite text-center hidden lg:block">Order no.</p>
+        <h1 className="t-heading text-center mt-2 hidden lg:block tracking-[0.04em]">
+          {orderNumber || (
+            <>
+              JN-
+              <span className="inline-block w-[4ch] border-b border-ink align-baseline" aria-label="pending" />
+            </>
+          )}
+        </h1>
         <div className="relative flex-1 my-3 lg:my-8 min-h-[140px]">
           <Preview leather={leather} cord={cord} order={order} />
         </div>
@@ -103,7 +107,7 @@ export default function OrderForm() {
       <div className="lg:py-8 lg:pr-8">
         <div className="ticket-edge bg-paper px-5 md:px-8 xl:px-10 pt-10 pb-40 lg:pb-32">
           <div className="flex items-baseline justify-between pb-6 border-b hairline">
-            <span className="t-label text-graphite">Order no.</span>
+            <span className="t-label text-graphite">Make yours</span>
             <span className="flex items-baseline gap-6">
               <button
                 type="button"
@@ -116,10 +120,16 @@ export default function OrderForm() {
               >
                 START OVER
               </button>
-              <span className="t-mono">{orderNumber || "JN-______"}</span>
             </span>
           </div>
-          <h1 className="t-heading lg:hidden mt-8">Make yours.</h1>
+          <h1 className="t-heading lg:hidden mt-8 tracking-[0.04em]">
+            {orderNumber || (
+              <>
+                JN-
+                <span className="inline-block w-[4ch] border-b border-ink align-baseline" aria-label="pending" />
+              </>
+            )}
+          </h1>
 
         <Section n="01" title="Choose your leather" error={errors.leather}>
           <div className="flex flex-wrap gap-4">
@@ -153,7 +163,7 @@ export default function OrderForm() {
               >
                 <span className="t-label block">{sz.name}</span>
                 <span className="t-mono text-graphite block mt-1">
-                  {sz.dims} · ${sz.price}
+                  {dims(sz)} · ${sz.price}
                 </span>
               </button>
             ))}
@@ -388,64 +398,90 @@ function Preview({
   cord?: (typeof CORDS)[number];
   order: Order;
 }) {
-  const keychain = order.size === "keychain";
-  const passport = order.size === "passport";
-  const scale = keychain ? 0.42 : passport ? 0.7 : 0.86;
-  const src = leather?.preview ?? "/images/closed-notebook-sand.webp";
+  const size = SIZES.find((sz) => sz.id === order.size) ?? SIZES[0];
+  const full = SIZES[0];
+  // Height relative to the stage so the three sizes read at true relative scale.
+  const heightPct = Math.round((size.height / full.height) * 78);
+  const radius = order.roundedEdges ? "4% / 2.6%" : "0.6% / 0.4%";
+  const src = leather?.preview ?? "/images/cover-sand.webp";
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      {/* The notebook photo (Jenn's, background removed, recolored per leather) */}
       <div
         className="relative"
-        style={{ height: `${scale * 100}%`, aspectRatio: "0.717", maxWidth: "100%", opacity: leather ? 1 : 0.5 }}
-        aria-hidden
+        style={{ height: `${heightPct}%`, aspectRatio: `${size.width} / ${size.height}`, maxWidth: "80%" }}
       >
-        <Image src={src} alt="" fill sizes="45vw" className="object-contain drop-shadow-[-18px_22px_16px_rgba(40,32,24,0.28)]" />
-        {cord && (
-          <div
-            className="absolute"
-            style={{
-              left: "8%",
-              right: "8%",
-              top: "51%",
-              height: keychain ? 2 : 3,
-              background: cord.color,
-              borderRadius: 2,
-              boxShadow: "0 1px 1px rgba(0,0,0,0.25)",
-            }}
-          />
-        )}
-        {order.charm && (
-          <div
-            className="absolute rounded-full"
-            style={{
-              top: "calc(51% - 9px)",
-              left: order.charmPlacement === "spine" ? "10%" : "46%",
-              width: 20,
-              height: 20,
-              background: "radial-gradient(circle at 35% 35%, #F4EFE6, #C9C0B2)",
-              border: "1px solid rgba(120,100,60,0.6)",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.35)",
-            }}
-          />
-        )}
-        {order.stamp && order.stampText.trim() && (
-          <p
-            className="deboss t-mono absolute text-[0.95rem] tracking-[0.2em]"
-            style={
-              order.stampPlacement === "spine"
-                ? { left: "11%", top: "58%", transform: "rotate(-90deg)", transformOrigin: "left top", whiteSpace: "nowrap" }
-                : order.stampPlacement === "inside"
-                  ? { left: "50%", bottom: "8%", transform: "translateX(-50%)", opacity: 0.5, whiteSpace: "nowrap" }
-                  : { right: "14%", bottom: "9%", whiteSpace: "nowrap" }
-            }
-          >
-            {order.stampText.trim().toUpperCase()}
-          </p>
-        )}
+        {/* The cover: the rendered notebook squared off, so corners are drawn here. */}
+        <div
+          className="absolute inset-0 overflow-hidden"
+          style={{
+            borderRadius: radius,
+            opacity: leather ? 1 : 0.5,
+            boxShadow: "-14px 18px 22px rgba(40,32,24,0.22), -3px 4px 6px rgba(40,32,24,0.18)",
+          }}
+          aria-hidden
+        >
+          <Image src={src} alt="" fill sizes="45vw" className="object-fill" />
+          {cord && (
+            <div
+              className="absolute left-0 right-0"
+              style={{
+                top: "50%",
+                height: size.id === "keychain" ? 2 : 3,
+                background: cord.color,
+                boxShadow: "0 1px 1px rgba(0,0,0,0.25)",
+              }}
+            />
+          )}
+          {order.charm && (
+            <div
+              className="absolute rounded-full"
+              style={{
+                top: "calc(50% - 9px)",
+                left: order.charmPlacement === "spine" ? "6%" : "46%",
+                width: 20,
+                height: 20,
+                background: "radial-gradient(circle at 35% 35%, #F4EFE6, #C9C0B2)",
+                border: "1px solid rgba(120,100,60,0.6)",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.35)",
+              }}
+            />
+          )}
+          {order.stamp && order.stampText.trim() && (
+            <p
+              className="deboss t-mono absolute text-[0.95rem] tracking-[0.2em]"
+              style={
+                order.stampPlacement === "spine"
+                  ? { left: "5%", top: "62%", transform: "rotate(-90deg)", transformOrigin: "left top", whiteSpace: "nowrap" }
+                  : order.stampPlacement === "inside"
+                    ? { left: "50%", bottom: "6%", transform: "translateX(-50%)", opacity: 0.5, whiteSpace: "nowrap" }
+                    : { right: "8%", bottom: "6%", whiteSpace: "nowrap" }
+              }
+            >
+              {order.stampText.trim().toUpperCase()}
+            </p>
+          )}
+        </div>
+
+        {/* Dimension lines: width below, height to the right. */}
+        <div className="absolute left-0 right-0 -bottom-9 flex flex-col items-center" aria-hidden>
+          <div className="w-full flex items-center">
+            <span className="w-px h-3 bg-graphite" />
+            <span className="flex-1 h-px bg-graphite" />
+            <span className="w-px h-3 bg-graphite" />
+          </div>
+          <span className="t-mono text-graphite mt-1">{size.width} IN</span>
+        </div>
+        <div className="absolute top-0 bottom-0 -right-9 flex items-center" aria-hidden>
+          <div className="h-full flex flex-col items-center">
+            <span className="h-px w-3 bg-graphite" />
+            <span className="flex-1 w-px bg-graphite" />
+            <span className="h-px w-3 bg-graphite" />
+          </div>
+          <span className="t-mono text-graphite ml-1 [writing-mode:vertical-rl]">{size.height} IN</span>
+        </div>
       </div>
       {!leather && (
-        <p className="t-mono text-graphite absolute bottom-2 left-0 right-0 text-center">START WITH A LEATHER</p>
+        <p className="t-mono text-graphite absolute bottom-0 left-0 right-0 text-center">START WITH A LEATHER</p>
       )}
     </div>
   );

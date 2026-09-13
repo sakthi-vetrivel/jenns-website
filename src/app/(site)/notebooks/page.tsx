@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import LeatherLedger from "@/components/LeatherLedger";
-import { SIZES } from "@/lib/catalog";
+import { SIZES, dims } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Notebooks · Jenn",
@@ -27,7 +27,7 @@ export default function Notebooks() {
               <div key={s.id} className="flex justify-between gap-4">
                 <dt>{s.name.toUpperCase()}</dt>
                 <dd>
-                  {s.dims} · ${s.price}
+                  {dims(s)} · ${s.price}
                 </dd>
               </div>
             ))}

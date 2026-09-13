@@ -17,25 +17,36 @@ export type Leather = {
 };
 
 export const LEATHERS: Leather[] = [
-  { id: "sand", name: "Sand", tint: "#E8C48E", ages: "Pale now. Darkens to honey in a year of hands.", swatch: "/images/closed-hide-sand.jpg", preview: "/images/closed-notebook-sand.webp" },
-  { id: "ochre", name: "Ochre", tint: "#D9A03C", ages: "Softens to mustard; the pull-up marks stay.", swatch: "/images/closed-hide-ochre.jpg", preview: "/images/closed-notebook-ochre.webp" },
-  { id: "saddle", name: "Saddle", tint: "#B8733A", ages: "Warm tan that goes tobacco where you hold it.", swatch: "/images/closed-hide-saddle.jpg", preview: "/images/closed-notebook-saddle.webp" },
-  { id: "terracotta", name: "Terracotta", tint: "#C26A47", ages: "Clay red-brown, deepens toward brick.", swatch: "/images/closed-hide-terracotta.jpg", preview: "/images/closed-notebook-terracotta.webp" },
-  { id: "cherry", name: "Cherry", tint: "#B4272F", ages: "Keeps its red; the edges burnish first.", swatch: "/images/closed-hide-cherry.jpg", preview: "/images/closed-notebook-cherry.webp" },
-  { id: "chestnut", name: "Chestnut", tint: "#8A4E3A", ages: "Deep brown from day one, gets a sheen.", swatch: "/images/closed-hide-chestnut.jpg", preview: "/images/closed-notebook-chestnut.webp" },
-  { id: "plum", name: "Plum", tint: "#5E323A", ages: "Goes almost black at the spine.", swatch: "/images/closed-hide-plum.jpg", preview: "/images/closed-notebook-plum.webp" },
-  { id: "green", name: "Green", tint: "#3E7A55", ages: "Grass green that mellows to moss.", swatch: "/images/closed-hide-green.jpg", preview: "/images/closed-notebook-green.webp" },
-  { id: "forest", name: "Forest", tint: "#2F4A43", ages: "Blue-green so dark it reads black in low light.", swatch: "/images/closed-hide-forest.jpg", preview: "/images/closed-notebook-forest.webp" },
-  { id: "black", name: "Black", tint: "#1A1816", ages: "Takes a sheen. Scratches rub out with a thumb.", swatch: "/images/closed-hide-black.jpg", preview: "/images/closed-notebook-black.webp" },
+  { id: "sand", name: "Sand", tint: "#E8C48E", ages: "Pale now. Darkens to honey in a year of hands.", swatch: "/images/swatch-sand.jpg", preview: "/images/cover-sand.webp" },
+  { id: "ochre", name: "Ochre", tint: "#D9A03C", ages: "Softens to mustard; the pull-up marks stay.", swatch: "/images/swatch-ochre.jpg", preview: "/images/cover-ochre.webp" },
+  { id: "saddle", name: "Saddle", tint: "#B8733A", ages: "Warm tan that goes tobacco where you hold it.", swatch: "/images/swatch-saddle.jpg", preview: "/images/cover-saddle.webp" },
+  { id: "terracotta", name: "Terracotta", tint: "#C26A47", ages: "Clay red-brown, deepens toward brick.", swatch: "/images/swatch-terracotta.jpg", preview: "/images/cover-terracotta.webp" },
+  { id: "cherry", name: "Cherry", tint: "#B4272F", ages: "Keeps its red; the edges burnish first.", swatch: "/images/swatch-cherry.jpg", preview: "/images/cover-cherry.webp" },
+  { id: "chestnut", name: "Chestnut", tint: "#8A4E3A", ages: "Deep brown from day one, gets a sheen.", swatch: "/images/swatch-chestnut.jpg", preview: "/images/cover-chestnut.webp" },
+  { id: "plum", name: "Plum", tint: "#5E323A", ages: "Goes almost black at the spine.", swatch: "/images/swatch-plum.jpg", preview: "/images/cover-plum.webp" },
+  { id: "green", name: "Green", tint: "#3E7A55", ages: "Grass green that mellows to moss.", swatch: "/images/swatch-green.jpg", preview: "/images/cover-green.webp" },
+  { id: "forest", name: "Forest", tint: "#2F4A43", ages: "Blue-green so dark it reads black in low light.", swatch: "/images/swatch-forest.jpg", preview: "/images/cover-forest.webp" },
+  { id: "black", name: "Black", tint: "#1A1816", ages: "Takes a sheen. Scratches rub out with a thumb.", swatch: "/images/swatch-black.jpg", preview: "/images/cover-black.webp" },
 ];
 
-export type Size = { id: "full" | "passport" | "keychain"; name: string; dims: string; price: number };
+export type Size = {
+  id: "full" | "passport" | "keychain";
+  name: string;
+  /** Closed cover, inches. Placeholders until Jenn measures each one. */
+  width: number;
+  height: number;
+  price: number;
+};
 
 export const SIZES: Size[] = [
-  { id: "full", name: "Full size", dims: "4.33 × 8.25 in", price: 75 },
-  { id: "passport", name: "Passport", dims: "3.5 × 5.5 in", price: 50 },
-  { id: "keychain", name: "Keychain", dims: "Mini, holds one insert", price: 15 },
+  { id: "full", name: "Full size", width: 4.33, height: 8.25, price: 75 },
+  { id: "passport", name: "Passport", width: 3.5, height: 5.5, price: 50 },
+  { id: "keychain", name: "Keychain", width: 2.25, height: 3.5, price: 15 },
 ];
+
+export function dims(sz: Size): string {
+  return `${sz.width} × ${sz.height} in`;
+}
 
 export type Cord = { id: string; name: string; color: string };
 
