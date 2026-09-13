@@ -128,3 +128,73 @@ export function toRow(o: Order, orderNumber: string, total: number) {
 }
 
 export type OrderRow = ReturnType<typeof toRow>;
+
+/** The spec as label/value pairs, shared by the confirmation and the email fallback. */
+export function specLines(o: Order): [string, string][] {
+  const leather = LEATHERS.find((l) => l.id === o.leather)?.name ?? "";
+  const size = SIZES.find((s) => s.id === o.size)?.name ?? "";
+  const cord = CORDS.find((c) => c.id === o.cord)?.name ?? "";
+  return [
+    ["LEATHER", leather.toUpperCase()],
+    ["SIZE", size.toUpperCase()],
+    ["CORNERS", o.roundedEdges ? "ROUNDED" : "SQUARE"],
+    ["CORD", cord.toUpperCase()],
+    [
+      "CHARM",
+      o.charm
+        ? [
+            CHARM_PLACEMENTS.find((p) => p.id === o.charmPlacement)?.name.toUpperCase() ?? "YES",
+            o.charmImage ? "PHOTO ATTACHED" : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : "NONE",
+    ],
+    ["STAMP", o.stamp ? `"${o.stampText.trim().toUpperCase()}"` : "NONE"],
+    ["MADE FOR", o.name.trim().toUpperCase()],
+    [
+      "DELIVERY",
+      [
+        DELIVERY.find((d) => d.id === o.delivery)?.name.toUpperCase() ?? "",
+        o.delivery === "delivery" ? `+$${DELIVERY_PRICE}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    ],
+  ];
+}
+
+/**
+ * Plain-text receipt for the email fallback: everything the sheet row would
+ * have carried, so Jenn can enter it by hand. The charm photo can't ride a
+ * mailto link; the customer is asked to attach it.
+ */
+export function receiptText(o: Order, total: number, orderNumber?: string): string {
+  const lines: string[] = [];
+  if (orderNumber) lines.push(`ORDER ${orderNumber}`);
+  for (const [k, v] of specLines(o)) lines.push(`${k}: ${v}`);
+  if (o.charm && o.charmDescription.trim()) lines.push(`CHARM DESCRIPTION: ${o.charmDescription.trim()}`);
+  if (o.stamp) {
+    const where = STAMP_PLACEMENTS.find((p) => p.id === o.stampPlacement)?.name ?? "";
+    if (where) lines.push(`STAMP PLACEMENT: ${where.toUpperCase()}`);
+  }
+  lines.push(`TOTAL: $${total}`);
+  lines.push("");
+  lines.push(`NAME: ${o.name.trim()}`);
+  lines.push(`EMAIL: ${o.email.trim()}`);
+  if (o.phone.trim()) lines.push(`PHONE: ${o.phone.trim()}`);
+  if (o.delivery === "delivery" && o.address.trim()) lines.push(`ADDRESS: ${o.address.trim()}`);
+  if (o.notes.trim()) lines.push(`NOTES: ${o.notes.trim()}`);
+  if (o.charm && o.charmImage) {
+    lines.push("");
+    lines.push("(Please attach the charm photo to this email.)");
+  }
+  return lines.join("\n");
+}
+
+/** mailto: link that opens the customer's mail app with the receipt filled in. */
+export function receiptMailto(to: string, o: Order, total: number, orderNumber?: string): string {
+  const subject = orderNumber ? `Notebook order ${orderNumber}` : `Notebook order for ${o.name.trim()}`;
+  const body = receiptText(o, total, orderNumber);
+  return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}

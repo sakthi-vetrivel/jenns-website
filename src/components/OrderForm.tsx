@@ -11,7 +11,6 @@ import {
   CHARM_PRICE,
   CORDS,
   DELIVERY,
-  DELIVERY_PRICE,
   dims,
   LEATHERS,
   SIZES,
@@ -21,7 +20,16 @@ import {
   VENMO_HANDLE,
   venmoUrl,
 } from "@/lib/catalog";
-import { CHARM_IMAGE_MAX_BYTES, EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
+import {
+  CHARM_IMAGE_MAX_BYTES,
+  EMPTY_ORDER,
+  priceOf,
+  receiptMailto,
+  specLines,
+  validate,
+  type Errors,
+  type Order,
+} from "@/lib/order";
 
 type Phase = "editing" | "submitting" | "confirmed";
 
@@ -31,6 +39,8 @@ export default function OrderForm() {
   const [phase, setPhase] = useState<Phase>("editing");
   const [orderNumber, setOrderNumber] = useState<string>("");
   const [serverError, setServerError] = useState<string>("");
+  /** Set when the order couldn't be saved; carries the number if one was issued. */
+  const [failed, setFailed] = useState<{ orderNumber?: string } | null>(null);
 
   const total = useMemo(() => priceOf(order), [order]);
 
@@ -56,22 +66,31 @@ export default function OrderForm() {
     }
     setPhase("submitting");
     setServerError("");
+    setFailed(null);
+    let issued: string | undefined;
     try {
       const res = await fetch("/api/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(order),
       });
-      const data = (await res.json()) as { orderNumber?: string; error?: string };
+      const data = (await res.json()) as { orderNumber?: string; stored?: boolean; error?: string };
       if (!res.ok || !data.orderNumber) throw new Error(data.error || "Something went wrong.");
+      // A number without a saved row means the sheet isn't wired up; don't pretend it landed.
+      if (data.stored === false) {
+        issued = data.orderNumber;
+        throw new Error("Couldn't save your order.");
+      }
       setOrderNumber(data.orderNumber);
       setPhase("confirmed");
       window.scrollTo({ top: 0 });
     } catch (err) {
-      setServerError(
-        err instanceof Error ? err.message : "Something went wrong. Nothing was charged.",
-      );
+      setServerError(err instanceof Error ? err.message : "Something went wrong.");
+      setFailed({ orderNumber: issued });
       setPhase("editing");
+      requestAnimationFrame(() => {
+        document.getElementById("email-receipt")?.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
     }
   }
 
@@ -371,6 +390,7 @@ export default function OrderForm() {
             {serverError.toUpperCase()} NOTHING WAS CHARGED.
           </p>
         )}
+        {failed && <EmailReceipt order={order} total={total} orderNumber={failed.orderNumber} />}
         </div>
       </div>
 
@@ -747,13 +767,49 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   );
 }
 
+/**
+ * Shown when the order couldn't be saved. The same ticket lines as the
+ * confirmation, plus a button that opens mail to Jenn with the whole order
+ * in the body, so nothing is lost while the sheet is down.
+ */
+function EmailReceipt({ order, total, orderNumber }: { order: Order; total: number; orderNumber?: string }) {
+  if (!CONTACT.email) return null;
+  const href = receiptMailto(CONTACT.email, order, total, orderNumber);
+  return (
+    <div id="email-receipt" className="mt-6 border hairline p-5 md:p-6">
+      <p className="t-mono text-graphite">YOUR ORDER, TO SEND BY EMAIL INSTEAD</p>
+      {orderNumber && <p className="t-heading mt-2">{orderNumber}</p>}
+      <dl className="t-mono mt-4 border-t hairline">
+        {specLines(order).map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-4 border-b hairline py-2">
+            <dt className="text-graphite">{k}</dt>
+            <dd className="text-right">{v}</dd>
+          </div>
+        ))}
+        <div className="flex justify-between gap-4 py-3">
+          <dt>TOTAL</dt>
+          <dd>${total}</dd>
+        </div>
+      </dl>
+      <p className="mt-4 max-w-prose">
+        The order sheet isn&rsquo;t answering. Send this to me by email and I&rsquo;ll reply with how to
+        pay. Everything above goes in the message, so just hit send
+        {order.charm && order.charmImage ? " and attach your charm photo" : ""}.
+      </p>
+      <a href={href} className="btn-primary inline-block mt-5">
+        Email this order to Jenn
+      </a>
+      <p className="t-mono text-graphite mt-3">
+        OR WRITE TO <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>
+      </p>
+    </div>
+  );
+}
+
 function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber: string; total: number }) {
   const router = useRouter();
   const [qr, setQr] = useState<string>("");
   const kiosk = useKiosk();
-  const leather = LEATHERS.find((l) => l.id === order.leather)?.name ?? "";
-  const size = SIZES.find((s) => s.id === order.size)?.name ?? "";
-  const cord = CORDS.find((c) => c.id === order.cord)?.name ?? "";
   const venmo = venmoUrl(total, orderNumber);
 
   useEffect(() => {
@@ -774,34 +830,7 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
     return () => window.clearTimeout(t);
   }, [kiosk, router]);
 
-  const lines: [string, string][] = [
-    ["LEATHER", leather.toUpperCase()],
-    ["SIZE", size.toUpperCase()],
-    ["CORNERS", order.roundedEdges ? "ROUNDED" : "SQUARE"],
-    ["CORD", cord.toUpperCase()],
-    [
-      "CHARM",
-      order.charm
-        ? [
-            CHARM_PLACEMENTS.find((p) => p.id === order.charmPlacement)?.name.toUpperCase() ?? "YES",
-            order.charmImage ? "PHOTO ATTACHED" : null,
-          ]
-            .filter(Boolean)
-            .join(" · ")
-        : "NONE",
-    ],
-    ["STAMP", order.stamp ? `"${order.stampText.trim().toUpperCase()}"` : "NONE"],
-    ["MADE FOR", order.name.trim().toUpperCase()],
-    [
-      "DELIVERY",
-      [
-        DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? "",
-        order.delivery === "delivery" ? `+$${DELIVERY_PRICE}` : null,
-      ]
-        .filter(Boolean)
-        .join(" · "),
-    ],
-  ];
+  const lines = specLines(order);
   return (
     <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
       <div className="ticket-edge bg-paper w-full max-w-3xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-start">
