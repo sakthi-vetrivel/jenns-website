@@ -425,7 +425,7 @@ function Preview({
           }}
           aria-hidden
         >
-          <Image src={src} alt="" fill sizes="45vw" className="object-fill" />
+          <Image src={src} alt="" fill priority sizes="45vw" className="object-fill" />
           {cord && (
             <div
               className="absolute left-0 right-0"
