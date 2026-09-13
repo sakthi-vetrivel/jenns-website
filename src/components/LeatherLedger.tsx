@@ -2,10 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LEATHERS } from "@/lib/catalog";
 
-/**
- * One leather per viewport when a photograph exists; a ledger row when it
- * doesn't. No grid, no cards. Photos come from Jenn.
- */
+/** The ten leathers: one fan photograph and a strip of names. */
 export default function LeatherLedger() {
   return (
     <section aria-labelledby="leathers" className="mt-section">
@@ -31,22 +28,16 @@ export default function LeatherLedger() {
         />
       </div>
 
-      <ol>
-        {LEATHERS.map((l, i) => (
-          <li key={l.id} className="border-t hairline">
-            <div className="grid grid-cols-[3rem_1fr] lg:grid-cols-12 items-center gap-4 px-5 md:px-8 py-6">
-              <p className="t-mono text-graphite lg:col-span-1">{String(i + 1).padStart(2, "0")}</p>
-              <div className="flex items-center gap-5 lg:col-span-4">
-                <span className="relative block w-14 h-14 shrink-0 overflow-hidden rounded-sm">
-                  <Image src={l.swatch} alt="" fill sizes="56px" className="object-cover" />
-                </span>
-                <h3 className="t-heading !text-[1.75rem]">{l.name}</h3>
-              </div>
-              <p className="text-graphite col-start-2 lg:col-start-6 lg:col-span-6">{l.ages}</p>
-            </div>
+      <ul className="px-5 md:px-8 mt-8 flex flex-wrap gap-x-8 gap-y-4">
+        {LEATHERS.map((l) => (
+          <li key={l.id} className="flex items-center gap-3">
+            <span className="relative block w-6 h-6 overflow-hidden rounded-sm">
+              <Image src={l.swatch} alt="" fill sizes="24px" className="object-cover" />
+            </span>
+            <span>{l.name}</span>
           </li>
         ))}
-      </ol>
+      </ul>
 
       <div className="px-5 md:px-8 mt-16">
         <Link href="/order" className="link text-[1.25rem]">
