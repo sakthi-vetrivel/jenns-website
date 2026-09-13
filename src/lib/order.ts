@@ -17,6 +17,9 @@ export type Order = {
   cord: string;
   charm: boolean;
   charmPlacement: "spine" | "front" | "";
+  charmDescription: string;
+  /** Downscaled JPEG as a data URL, set client-side. Saved to Drive by the sheet script. */
+  charmImage: { name: string; dataUrl: string } | null;
   stamp: boolean;
   stampText: string;
   stampPlacement: "spine" | "front" | "inside" | "";
@@ -35,6 +38,8 @@ export const EMPTY_ORDER: Order = {
   cord: "",
   charm: false,
   charmPlacement: "",
+  charmDescription: "",
+  charmImage: null,
   stamp: false,
   stampText: "",
   stampPlacement: "",
@@ -53,6 +58,9 @@ export function priceOf(o: Pick<Order, "size" | "charm" | "stamp">): number {
 
 export type Errors = Partial<Record<keyof Order, string>>;
 
+/** Raw bytes after client-side downscale; base64 adds ~35%. Stays under Vercel's 4.5 MB body cap. */
+export const CHARM_IMAGE_MAX_BYTES = 2_500_000;
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function validate(o: Order): Errors {
@@ -60,8 +68,15 @@ export function validate(o: Order): Errors {
   if (!LEATHERS.some((l) => l.id === o.leather)) e.leather = "Pick a leather.";
   if (!SIZES.some((s) => s.id === o.size)) e.size = "Pick a size.";
   if (!CORDS.some((c) => c.id === o.cord)) e.cord = "Pick a cord color.";
-  if (o.charm && !CHARM_PLACEMENTS.some((p) => p.id === o.charmPlacement))
-    e.charmPlacement = "Where should the charm go?";
+  if (o.charm) {
+    if (!CHARM_PLACEMENTS.some((p) => p.id === o.charmPlacement))
+      e.charmPlacement = "Where should the charm go?";
+    if (!o.charmDescription.trim() && !o.charmImage)
+      e.charmDescription = "Describe the charm or add a photo of it.";
+    if (o.charmDescription.trim().length > 500) e.charmDescription = "Keep it under 500 characters.";
+    if (o.charmImage && o.charmImage.dataUrl.length > CHARM_IMAGE_MAX_BYTES * 1.4)
+      e.charmImage = "That photo is too large. Try a smaller one.";
+  }
   if (o.stamp) {
     const t = o.stampText.trim();
     if (!t) e.stampText = "What should I stamp?";
@@ -90,6 +105,8 @@ export function toRow(o: Order, orderNumber: string, total: number) {
     roundedEdges: o.roundedEdges ? "yes" : "no",
     cord,
     charm: o.charm ? (CHARM_PLACEMENTS.find((p) => p.id === o.charmPlacement)?.name ?? "yes") : "no",
+    charmDescription: o.charm ? o.charmDescription.trim() : "",
+    charmPhoto: "", // Drive link, filled in by the sheet script when a photo was attached
     stamp: o.stamp ? o.stampText.trim() : "no",
     stampPlacement: o.stamp ? (STAMP_PLACEMENTS.find((p) => p.id === o.stampPlacement)?.name ?? "") : "",
     name: o.name.trim(),

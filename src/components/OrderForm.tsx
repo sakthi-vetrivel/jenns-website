@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   CHARM_PLACEMENTS,
   CORDS,
@@ -12,7 +12,7 @@ import {
   STAMP_PLACEMENTS,
   VENMO_HANDLE,
 } from "@/lib/catalog";
-import { EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
+import { CHARM_IMAGE_MAX_BYTES, EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
 
 type Phase = "editing" | "submitting" | "confirmed";
 
@@ -152,7 +152,12 @@ export default function OrderForm() {
           <p className="t-mono text-graphite mt-4">{cord ? cord.name.toUpperCase() : "PICK ONE"}</p>
         </Section>
 
-        <Section n="05" title="Charm" hint="A small stone on the cord. +$8." error={errors.charmPlacement}>
+        <Section
+          n="05"
+          title="Charm"
+          hint="A small stone or trinket on the cord. +$8."
+          error={errors.charmPlacement || errors.charmDescription || errors.charmImage}
+        >
           <Choice
             options={[
               { id: "no", label: "No charm" },
@@ -161,7 +166,11 @@ export default function OrderForm() {
             value={order.charm ? "yes" : "no"}
             onChange={(v) => {
               set("charm", v === "yes");
-              if (v === "no") set("charmPlacement", "");
+              if (v === "no") {
+                set("charmPlacement", "");
+                set("charmDescription", "");
+                set("charmImage", null);
+              }
             }}
           />
           <Expand open={order.charm}>
@@ -171,6 +180,28 @@ export default function OrderForm() {
               value={order.charmPlacement}
               onChange={(v) => set("charmPlacement", v as Order["charmPlacement"])}
             />
+            <div className="mt-6">
+              <Field label="Describe the charm" error={errors.charmDescription}>
+                <textarea
+                  className="input min-h-24"
+                  value={order.charmDescription}
+                  maxLength={500}
+                  placeholder="e.g. a small rose quartz disc in a gold bezel, or one you already own"
+                  aria-invalid={!!errors.charmDescription}
+                  onChange={(e) => set("charmDescription", e.target.value)}
+                />
+              </Field>
+              <p className="t-mono text-graphite mt-2">
+                HAVE ONE IN MIND? A PHOTO HELPS. IF YOU ALREADY OWN THE CHARM, BRING IT TO THE HANDOFF.
+              </p>
+            </div>
+            <div className="mt-6">
+              <CharmPhoto
+                image={order.charmImage}
+                error={errors.charmImage}
+                onChange={(img) => set("charmImage", img)}
+              />
+            </div>
           </Expand>
         </Section>
 
@@ -374,6 +405,106 @@ function Preview({
   );
 }
 
+function CharmPhoto({
+  image,
+  error,
+  onChange,
+}: {
+  image: Order["charmImage"];
+  error?: string;
+  onChange: (img: Order["charmImage"]) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [localError, setLocalError] = useState("");
+
+  async function pick(file: File | undefined) {
+    if (!file) return;
+    setLocalError("");
+    if (!file.type.startsWith("image/")) {
+      setLocalError("That isn't an image.");
+      return;
+    }
+    setBusy(true);
+    try {
+      onChange({ name: file.name, dataUrl: await downscale(file) });
+    } catch {
+      setLocalError("Couldn't read that photo. Try a JPG or PNG.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div>
+      <p className="t-label text-graphite">Photo of the charm (optional)</p>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(e) => pick(e.target.files?.[0])}
+      />
+      {image ? (
+        <div className="mt-2 flex items-center gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image.dataUrl}
+            alt="Your charm"
+            className="w-20 h-20 object-cover border hairline bg-suede"
+          />
+          <div>
+            <p className="t-mono truncate max-w-[14rem]">{image.name.toUpperCase()}</p>
+            <button
+              type="button"
+              className="link t-mono mt-1"
+              onClick={() => {
+                onChange(null);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
+            >
+              REMOVE
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="btn-ghost mt-2"
+          disabled={busy}
+          onClick={() => inputRef.current?.click()}
+        >
+          {busy ? "Reading…" : "Add a photo"}
+        </button>
+      )}
+      {(localError || error) && (
+        <p className="t-mono text-oxblood mt-2" role="alert">
+          {(localError || error || "").toUpperCase()}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Resize to at most 1600px on the long side and re-encode as JPEG until it fits the cap. */
+async function downscale(file: File): Promise<string> {
+  const bitmap = await createImageBitmap(file);
+  const long = Math.max(bitmap.width, bitmap.height);
+  const scale = Math.min(1, 1600 / long);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("no canvas");
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  for (const q of [0.82, 0.7, 0.55, 0.4]) {
+    const url = canvas.toDataURL("image/jpeg", q);
+    if (url.length * 0.75 <= CHARM_IMAGE_MAX_BYTES) return url;
+  }
+  throw new Error("too large");
+}
+
 function Section({
   n,
   title,
@@ -469,7 +600,17 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
     ["SIZE", size.toUpperCase()],
     ["EDGES", order.roundedEdges ? "ROUNDED" : "SQUARE"],
     ["CORD", cord.toUpperCase()],
-    ["CHARM", order.charm ? (CHARM_PLACEMENTS.find((p) => p.id === order.charmPlacement)?.name.toUpperCase() ?? "YES") : "NONE"],
+    [
+      "CHARM",
+      order.charm
+        ? [
+            CHARM_PLACEMENTS.find((p) => p.id === order.charmPlacement)?.name.toUpperCase() ?? "YES",
+            order.charmImage ? "PHOTO ATTACHED" : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")
+        : "NONE",
+    ],
     ["STAMP", order.stamp ? `"${order.stampText.trim().toUpperCase()}"` : "NONE"],
     ["MADE FOR", order.name.trim().toUpperCase()],
     ["DELIVERY", DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? ""],

@@ -212,7 +212,7 @@ The form asks exactly these, in this order. Each is a numbered section on the ti
 2. **02 Size:** Full size or Passport. Two text options with dimensions in mono under each.
 3. **03 Edges:** Rounded corners, yes or no. Two text options.
 4. **04 Cord:** which color. Round color dots.
-5. **05 Charm:** none, or yes, then where: on the spine or on the front. The where options appear only after yes.
+5. **05 Charm:** none, or yes, then where: on the spine or on the front, then a description of the charm and an optional photo of it. One of description or photo is required. The photo is downscaled in the browser and saved to Jenn's Drive by the sheet script; the sheet row gets the link. The where, description, and photo fields appear only after yes.
 6. **06 Stamp:** none, or yes, then the initials (short text input with a live count) and where (spine, front, or inside cover). Preview renders debossed.
 7. **07 You:** name, email, phone. Delivery method: meet at Noe Valley Town Square, or an address for delivery. The address fields appear only when delivery is chosen.
 8. **08 Payment:** a statement, not a form. Total in mono, then: pay by Venmo to Jenn's handle after she confirms by hand within a day. The button reads "Reserve my notebook."
@@ -252,4 +252,5 @@ Every component designs its empty, loading, error, and long-content states. A ti
 | 2026-09-12 | Young Serif display, Source Serif 4 body, Courier Prime fenced to the ticket | Object-world faces: a stamp, a book, a receipt. Subagent proposed a grotesk body; overruled because the reference world is all-serif and "heirloom" reads better in a book face. |
 | 2026-09-12 | Home hero: mockup A approved; order page: mockup B approved | User: "A is really beautiful." Headline overlaps the photo edge; tag pinned bottom-right. |
 | 2026-09-12 | Page-turn animation on "Make yours" opens the order flow | User request. Replaces the stamp settle as the primary authored moment; stamp kept as secondary. |
+| 2026-09-12 | Charm section takes a description and an optional photo, stored in Drive | User request. Keeps every order artifact inside Jenn's Google account. |
 | 2026-09-12 | Order ticket fields fixed at eight numbered sections | User-supplied list: leather, size (full/passport), rounded edges, cord color, charm (spine/front), stamp (initials, where), contact + delivery (Noe Valley Town Square meetup or address), Venmo payment statement. |

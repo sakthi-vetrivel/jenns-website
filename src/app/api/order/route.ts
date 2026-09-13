@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { toRow, validate, priceOf, type Order } from "@/lib/order";
+import { CHARM_IMAGE_MAX_BYTES } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -21,6 +22,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Please check the form.", errors }, { status: 422 });
   }
 
+  const charmImage = body.charm && body.charmImage ? body.charmImage : null;
+  if (charmImage) {
+    const ok =
+      typeof charmImage.dataUrl === "string" &&
+      /^data:image\/(jpeg|png|webp);base64,/.test(charmImage.dataUrl) &&
+      charmImage.dataUrl.length <= CHARM_IMAGE_MAX_BYTES * 1.4;
+    if (!ok) return NextResponse.json({ error: "That charm photo couldn't be read." }, { status: 422 });
+  }
+
   const orderNumber = makeOrderNumber();
   const row = toRow(body, orderNumber, priceOf(body));
 
@@ -28,7 +38,10 @@ export async function POST(req: Request) {
   const secret = process.env.ORDERS_WEBHOOK_SECRET ?? "";
 
   if (!url) {
-    console.warn("[order] ORDERS_WEBHOOK_URL not set; row not sent:", row);
+    console.warn("[order] ORDERS_WEBHOOK_URL not set; row not sent:", {
+      ...row,
+      charmPhoto: charmImage ? `(photo attached, ${Math.round(charmImage.dataUrl.length * 0.75 / 1024)} KB)` : "",
+    });
     return NextResponse.json({ orderNumber, stored: false });
   }
 
@@ -36,7 +49,7 @@ export async function POST(req: Request) {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids Apps Script CORS preflight
-      body: JSON.stringify({ secret, row }),
+      body: JSON.stringify({ secret, row, charmImage }),
       redirect: "follow", // Apps Script responds with a 302 to the result
       cache: "no-store",
     });
