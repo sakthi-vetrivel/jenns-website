@@ -71,6 +71,7 @@ export const CORDS: Cord[] = [
 ];
 
 export const CHARM_PRICE = 5;
+export const DELIVERY_PRICE = 15;
 export const STAMP_PRICE = 5;
 export const STAMP_MAX = 3;
 
@@ -86,11 +87,16 @@ export const STAMP_PLACEMENTS = [
 ] as const;
 
 export const DELIVERY = [
-  { id: "meetup", name: "Meet at Noe Valley Town Square" },
-  { id: "delivery", name: "Deliver to my address" },
+  { id: "meetup", name: "Meet at Noe Valley Town Square", price: 0 },
+  { id: "delivery", name: "Deliver to my address", price: DELIVERY_PRICE },
 ] as const;
 
-export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "jenn";
+export const VENMO_HANDLE = process.env.NEXT_PUBLIC_VENMO_HANDLE ?? "jchwang";
+
+/** Opens Venmo (app on a phone, web elsewhere) pre-filled to pay Jenn, with the order number as the memo. */
+export function venmoUrl(amount: number, orderNumber: string): string {
+  return `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${amount}&note=${encodeURIComponent(orderNumber)}`;
+}
 
 /** Static for now; later read from the same Google Sheet the orders land in. */
 export const QUEUE = {

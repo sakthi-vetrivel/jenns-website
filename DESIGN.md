@@ -194,7 +194,7 @@ Square by default. Radius hierarchy: `none` for the ticket, inputs, and photogra
 
 ## Components
 
-- **button-primary:** the only filled element on the site. One per screen. Label in the `label` style (uppercase, tracked). Hover darkens to `primary-hover`; focus-visible shows a 2px `primary` outline offset 3px; active shifts 1px down; disabled drops to 40% opacity and keeps its color. The label names the outcome: "Reserve my notebook," never "Submit."
+- **button-primary:** the only filled element on the site. One per screen. Label in the `label` style (uppercase, tracked). Hover darkens to `primary-hover`; focus-visible shows a 2px `primary` outline offset 3px; active shifts 1px down; disabled drops to 40% opacity and keeps its color. The label names the outcome: "Reserve & pay with Venmo," never "Submit."
 - **button-ghost:** text with a 1px `text` border, for the rare secondary action ("Start over"). Same states as primary with the border carrying the color.
 - **link:** `primary`, no underline at rest, underline on hover and focus. The hero link "Make yours →" is this component set in `body` size.
 - **input:** `surface` fill, 1px `rule` border, square, mono placeholder in `text-muted`. Focus swaps the border to `primary`. Error swaps it to `error` and adds a one-line mono message below. The stamp input shows a live count out of 3 in mono.
@@ -215,8 +215,8 @@ The form asks exactly these, in this order. Each is a numbered section on the ti
 4. **04 Cord:** which color, no charge. Round color dots.
 5. **05 Charm (+$5):** none, or yes, then where: on the spine or on the front, then a description of the charm and an optional photo of it. One of description or photo is required. The photo is downscaled in the browser and saved to Jenn's Drive by the sheet script; the sheet row gets the link. The where, description, and photo fields appear only after yes.
 6. **06 Stamp (+$5):** none, or yes, then up to 3 letters (short text input with a live count) and where (spine, front, or inside cover). Preview renders debossed.
-7. **07 You:** name, email, phone. Delivery method: meet at Noe Valley Town Square, or an address for delivery. The address fields appear only when delivery is chosen.
-8. **08 Payment:** a statement, not a form. Total in mono, then: pay by Venmo to Jenn's handle after she confirms by hand within a day. The button reads "Reserve my notebook."
+7. **07 Where it goes:** name, email, phone. Delivery method: meet at Noe Valley Town Square (no charge), or an address for delivery (+$15). The address fields appear only when delivery is chosen.
+8. **08 Payment:** one sentence and the button. Reserving issues the order number; the confirmation then carries a Venmo button that opens the app pre-filled to pay @jchwang the total with the order number as the memo. On the kiosk the same link is a QR code instead. The button reads "Reserve & pay with Venmo."
 
 Submission writes one row to the Google Sheet. The confirmation page repeats the order number, the configuration as a ticket, the Venmo handle with a QR, and the one sentence from Jenn.
 
@@ -234,7 +234,7 @@ Every component designs its empty, loading, error, and long-content states. A ti
 - Don't: use an italic anywhere in display or heading. Source Serif 4's italic is for citations in body text only.
 - Don't: add CSS leather grain, kraft-paper textures, wax seals, stitched borders, script fonts, or dried-flower photography.
 - Don't: crossfade swatch changes, fade sections in on scroll, zoom photos on hover, or add parallax. The only motion is the two moments below.
-- Don't: use "Get started," "Learn more," "Explore," "Seamless," or "Handcrafted with love." Name the outcome: "Make yours," "Reserve my notebook."
+- Don't: use "Get started," "Learn more," "Explore," "Seamless," or "Handcrafted with love." Name the outcome: "Make yours," "Reserve & pay with Venmo."
 
 ## Motion
 

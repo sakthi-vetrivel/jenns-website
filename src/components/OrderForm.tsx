@@ -10,6 +10,7 @@ import {
   CHARM_PRICE,
   CORDS,
   DELIVERY,
+  DELIVERY_PRICE,
   dims,
   LEATHERS,
   SIZES,
@@ -17,6 +18,7 @@ import {
   STAMP_PLACEMENTS,
   STAMP_PRICE,
   VENMO_HANDLE,
+  venmoUrl,
 } from "@/lib/catalog";
 import { CHARM_IMAGE_MAX_BYTES, EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
 
@@ -238,9 +240,6 @@ export default function OrderForm() {
                   onChange={(e) => set("charmDescription", e.target.value)}
                 />
               </Field>
-              <p className="t-mono text-graphite mt-2">
-                HAVE ONE IN MIND? A PHOTO HELPS. IF YOU ALREADY OWN THE CHARM, BRING IT TO THE HANDOFF.
-              </p>
             </div>
             <div className="mt-6">
               <CharmPhoto
@@ -331,7 +330,7 @@ export default function OrderForm() {
           </div>
           <p className="t-label mt-8 mb-3 text-graphite">How you&rsquo;ll get it</p>
           <Choice
-            options={DELIVERY.map((d) => ({ id: d.id, label: d.name }))}
+            options={DELIVERY.map((d) => ({ id: d.id, label: d.name, hint: d.price ? `+$${d.price}` : "No charge" }))}
             value={order.delivery}
             onChange={(v) => set("delivery", v as Order["delivery"])}
           />
@@ -361,10 +360,13 @@ export default function OrderForm() {
 
         <Section n="08" title="Payment">
           <p className="max-w-prose">
-            Nothing is charged here. When you reserve, I get your order and
-            confirm by hand within a day. Then you Venmo{" "}
-            <span className="t-mono">@{VENMO_HANDLE}</span> and I start cutting.
+            Pay <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo. Reserve first: that gives your
+            order a number, and the Venmo button that follows carries it as the memo so Jenn can match
+            the payment to your notebook.
           </p>
+          <button type="submit" className="btn-primary mt-6" disabled={phase === "submitting"}>
+            {phase === "submitting" ? "Reserving…" : `Reserve & pay $${total} with Venmo`}
+          </button>
         </Section>
 
         {serverError && (
@@ -382,7 +384,7 @@ export default function OrderForm() {
           <span className="hidden xl:inline"> · PAY BY VENMO AFTER CONFIRMATION</span>
         </p>
         <button type="submit" className="btn-primary" disabled={phase === "submitting"}>
-          {phase === "submitting" ? "Reserving…" : "Reserve my notebook"}
+          {phase === "submitting" ? "Reserving…" : "Reserve & pay with Venmo"}
         </button>
       </div>
     </form>
@@ -678,8 +680,7 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
   const leather = LEATHERS.find((l) => l.id === order.leather)?.name ?? "";
   const size = SIZES.find((s) => s.id === order.size)?.name ?? "";
   const cord = CORDS.find((c) => c.id === order.cord)?.name ?? "";
-  const note = encodeURIComponent(`${orderNumber} ${leather} ${size}`);
-  const venmo = `https://venmo.com/?txn=pay&audience=private&recipients=${VENMO_HANDLE}&amount=${total}&note=${note}`;
+  const venmo = venmoUrl(total, orderNumber);
 
   useEffect(() => {
     let live = true;
@@ -717,7 +718,15 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
     ],
     ["STAMP", order.stamp ? `"${order.stampText.trim().toUpperCase()}"` : "NONE"],
     ["MADE FOR", order.name.trim().toUpperCase()],
-    ["DELIVERY", DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? ""],
+    [
+      "DELIVERY",
+      [
+        DELIVERY.find((d) => d.id === order.delivery)?.name.toUpperCase() ?? "",
+        order.delivery === "delivery" ? `+$${DELIVERY_PRICE}` : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
+    ],
   ];
   return (
     <section className="px-5 md:px-8 py-12 lg:py-20 flex justify-center bg-suede min-h-screen">
@@ -745,15 +754,14 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
               </>
             ) : (
               <>
-                I&rsquo;ll confirm by hand within a day. Once I do, Venmo{" "}
-                <span className="t-mono">@{VENMO_HANDLE}</span> with the order number in the note and
-                I&rsquo;ll start cutting.
+                Your notebook is reserved. The button opens Venmo with the amount and your order number
+                filled in as the memo. I&rsquo;ll confirm by hand within a day and start cutting.
               </>
             )}
           </p>
           {!kiosk && (
             <a href={venmo} className="btn-primary inline-block mt-8" target="_blank" rel="noopener">
-              Open Venmo · ${total}
+              Pay ${total} to @{VENMO_HANDLE} on Venmo
             </a>
           )}
           <p className="t-mono text-graphite mt-8">I&rsquo;LL WRITE TO {order.email.trim().toUpperCase()}</p>

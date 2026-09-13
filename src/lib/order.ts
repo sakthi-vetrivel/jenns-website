@@ -3,6 +3,7 @@ import {
   CHARM_PRICE,
   CORDS,
   DELIVERY,
+  DELIVERY_PRICE,
   LEATHERS,
   SIZES,
   STAMP_MAX,
@@ -51,9 +52,14 @@ export const EMPTY_ORDER: Order = {
   notes: "",
 };
 
-export function priceOf(o: Pick<Order, "size" | "charm" | "stamp">): number {
+export function priceOf(o: Pick<Order, "size" | "charm" | "stamp" | "delivery">): number {
   const size = SIZES.find((s) => s.id === o.size) ?? SIZES[0];
-  return size.price + (o.charm ? CHARM_PRICE : 0) + (o.stamp ? STAMP_PRICE : 0);
+  return (
+    size.price +
+    (o.charm ? CHARM_PRICE : 0) +
+    (o.stamp ? STAMP_PRICE : 0) +
+    (o.delivery === "delivery" ? DELIVERY_PRICE : 0)
+  );
 }
 
 export type Errors = Partial<Record<keyof Order, string>>;
@@ -114,6 +120,7 @@ export function toRow(o: Order, orderNumber: string, total: number) {
     phone: o.phone.trim(),
     delivery: DELIVERY.find((d) => d.id === o.delivery)?.name ?? o.delivery,
     address: o.delivery === "delivery" ? o.address.trim() : "",
+    deliveryFee: o.delivery === "delivery" ? DELIVERY_PRICE : 0,
     notes: o.notes.trim(),
     total,
     paid: "no",

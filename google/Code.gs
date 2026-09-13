@@ -16,7 +16,7 @@
 var HEADERS = [
   "orderNumber", "submittedAt", "status", "leather", "size", "roundedEdges",
   "cord", "charm", "charmDescription", "charmPhoto", "stamp", "stampPlacement",
-  "name", "email", "phone", "delivery", "address", "notes", "total", "paid",
+  "name", "email", "phone", "delivery", "address", "deliveryFee", "notes", "total", "paid",
 ];
 
 var PHOTO_FOLDER = "Notebook orders - charm photos";
