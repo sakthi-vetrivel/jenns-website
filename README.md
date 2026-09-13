@@ -54,6 +54,6 @@ in the Vercel project settings.
 
 ## Placeholders to replace
 
-- `public/images/*.jpg` are crops of the approved mockups, not real product photos.
+- Hero, previews, and swatches are cut from the approved AI mockups (`design/reference/`), not real product photos. Jenn's real photos are in `design/photos/` for when she wants to switch.
 - Cord colors, leather names, and the queue values live in `src/lib/catalog.ts`. Prices there are Jenn's (2026-09-12).
 - No email is sent yet; Jenn replies from the sheet. Wiring a confirmation email is a follow-up.

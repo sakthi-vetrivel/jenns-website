@@ -10,23 +10,23 @@ export type Leather = {
   /** Fallback tint; the swatch and preview are photographs. */
   tint: string;
   ages: string;
-  /** Square crop of real hide, recolored per leather until Jenn shoots each one. */
+  /** Square crop of the mockup's leather, recolored per leather until Jenn shoots each one. */
   swatch: string;
-  /** Jenn's notebook, background removed, recolored per leather, for the live preview. */
+  /** The mockup's notebook, background removed, recolored per leather, for the live preview. */
   preview: string;
 };
 
 export const LEATHERS: Leather[] = [
-  { id: "sand", name: "Sand", tint: "#E8C48E", ages: "Pale now. Darkens to honey in a year of hands.", swatch: "/images/hide-sand.jpg", preview: "/images/notebook-sand.webp" },
-  { id: "ochre", name: "Ochre", tint: "#D9A03C", ages: "Softens to mustard; the pull-up marks stay.", swatch: "/images/hide-ochre.jpg", preview: "/images/notebook-ochre.webp" },
-  { id: "saddle", name: "Saddle", tint: "#B8733A", ages: "Warm tan that goes tobacco where you hold it.", swatch: "/images/hide-saddle.jpg", preview: "/images/notebook-saddle.webp" },
-  { id: "terracotta", name: "Terracotta", tint: "#C26A47", ages: "Clay red-brown, deepens toward brick.", swatch: "/images/hide-terracotta.jpg", preview: "/images/notebook-terracotta.webp" },
-  { id: "cherry", name: "Cherry", tint: "#B4272F", ages: "Keeps its red; the edges burnish first.", swatch: "/images/hide-cherry.jpg", preview: "/images/notebook-cherry.webp" },
-  { id: "chestnut", name: "Chestnut", tint: "#8A4E3A", ages: "Deep brown from day one, gets a sheen.", swatch: "/images/hide-chestnut.jpg", preview: "/images/notebook-chestnut.webp" },
-  { id: "plum", name: "Plum", tint: "#5E323A", ages: "Goes almost black at the spine.", swatch: "/images/hide-plum.jpg", preview: "/images/notebook-plum.webp" },
-  { id: "green", name: "Green", tint: "#3E7A55", ages: "Grass green that mellows to moss.", swatch: "/images/hide-green.jpg", preview: "/images/notebook-green.webp" },
-  { id: "forest", name: "Forest", tint: "#2F4A43", ages: "Blue-green so dark it reads black in low light.", swatch: "/images/hide-forest.jpg", preview: "/images/notebook-forest.webp" },
-  { id: "black", name: "Black", tint: "#1A1816", ages: "Takes a sheen. Scratches rub out with a thumb.", swatch: "/images/hide-black.jpg", preview: "/images/notebook-black.webp" },
+  { id: "sand", name: "Sand", tint: "#E8C48E", ages: "Pale now. Darkens to honey in a year of hands.", swatch: "/images/closed-hide-sand.jpg", preview: "/images/closed-notebook-sand.webp" },
+  { id: "ochre", name: "Ochre", tint: "#D9A03C", ages: "Softens to mustard; the pull-up marks stay.", swatch: "/images/closed-hide-ochre.jpg", preview: "/images/closed-notebook-ochre.webp" },
+  { id: "saddle", name: "Saddle", tint: "#B8733A", ages: "Warm tan that goes tobacco where you hold it.", swatch: "/images/closed-hide-saddle.jpg", preview: "/images/closed-notebook-saddle.webp" },
+  { id: "terracotta", name: "Terracotta", tint: "#C26A47", ages: "Clay red-brown, deepens toward brick.", swatch: "/images/closed-hide-terracotta.jpg", preview: "/images/closed-notebook-terracotta.webp" },
+  { id: "cherry", name: "Cherry", tint: "#B4272F", ages: "Keeps its red; the edges burnish first.", swatch: "/images/closed-hide-cherry.jpg", preview: "/images/closed-notebook-cherry.webp" },
+  { id: "chestnut", name: "Chestnut", tint: "#8A4E3A", ages: "Deep brown from day one, gets a sheen.", swatch: "/images/closed-hide-chestnut.jpg", preview: "/images/closed-notebook-chestnut.webp" },
+  { id: "plum", name: "Plum", tint: "#5E323A", ages: "Goes almost black at the spine.", swatch: "/images/closed-hide-plum.jpg", preview: "/images/closed-notebook-plum.webp" },
+  { id: "green", name: "Green", tint: "#3E7A55", ages: "Grass green that mellows to moss.", swatch: "/images/closed-hide-green.jpg", preview: "/images/closed-notebook-green.webp" },
+  { id: "forest", name: "Forest", tint: "#2F4A43", ages: "Blue-green so dark it reads black in low light.", swatch: "/images/closed-hide-forest.jpg", preview: "/images/closed-notebook-forest.webp" },
+  { id: "black", name: "Black", tint: "#1A1816", ages: "Takes a sheen. Scratches rub out with a thumb.", swatch: "/images/closed-hide-black.jpg", preview: "/images/closed-notebook-black.webp" },
 ];
 
 export type Size = { id: "full" | "passport" | "keychain"; name: string; dims: string; price: number };

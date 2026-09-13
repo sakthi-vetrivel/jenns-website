@@ -391,13 +391,13 @@ function Preview({
   const keychain = order.size === "keychain";
   const passport = order.size === "passport";
   const scale = keychain ? 0.42 : passport ? 0.7 : 0.86;
-  const src = leather?.preview ?? "/images/notebook-sand.webp";
+  const src = leather?.preview ?? "/images/closed-notebook-sand.webp";
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       {/* The notebook photo (Jenn's, background removed, recolored per leather) */}
       <div
         className="relative"
-        style={{ height: `${scale * 100}%`, aspectRatio: "0.74", maxWidth: "100%", opacity: leather ? 1 : 0.5 }}
+        style={{ height: `${scale * 100}%`, aspectRatio: "0.717", maxWidth: "100%", opacity: leather ? 1 : 0.5 }}
         aria-hidden
       >
         <Image src={src} alt="" fill sizes="45vw" className="object-contain drop-shadow-[-18px_22px_16px_rgba(40,32,24,0.28)]" />
@@ -405,9 +405,9 @@ function Preview({
         <div
           className="absolute"
           style={{
-            left: "14%",
-            right: "13%",
-            top: "43.5%",
+            left: "8%",
+            right: "8%",
+            top: "51%",
             height: keychain ? 2 : 3,
             background: cord?.color ?? "rgba(28,31,43,0.3)",
             borderRadius: 2,
@@ -418,8 +418,8 @@ function Preview({
           <div
             className="absolute rounded-full"
             style={{
-              top: "calc(43.5% - 9px)",
-              left: order.charmPlacement === "spine" ? "12%" : "47%",
+              top: "calc(51% - 9px)",
+              left: order.charmPlacement === "spine" ? "10%" : "46%",
               width: 20,
               height: 20,
               background: "radial-gradient(circle at 35% 35%, #F4EFE6, #C9C0B2)",
