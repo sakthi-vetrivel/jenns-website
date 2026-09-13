@@ -464,26 +464,36 @@ function Preview({
           )}
         </div>
 
-        {/* Keychain: a brass split ring through the top-left corner. */}
+        {/* Keychain: a brass grommet on the spine, a short chain, and a split ring. */}
         {size.id === "keychain" && (
           <svg
             aria-hidden
-            viewBox="0 0 64 64"
-            className="absolute"
-            style={{ width: "34%", left: "-22%", top: "-16%", transform: "rotate(-35deg)" }}
+            viewBox="0 0 140 140"
+            className="absolute overflow-visible"
+            style={{ width: "62%", left: "-46%", top: "-30%" }}
           >
             <defs>
               <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#D9BE84" />
+                <stop offset="0" stopColor="#E2C990" />
                 <stop offset="0.5" stopColor="#B08D57" />
                 <stop offset="1" stopColor="#6F532B" />
               </linearGradient>
             </defs>
-            {/* connector loop sitting in the corner */}
-            <ellipse cx="47" cy="47" rx="6" ry="9" fill="none" stroke="url(#brass)" strokeWidth="3.2" transform="rotate(45 47 47)" />
+            {/* grommet set into the spine edge */}
+            <circle cx="112" cy="112" r="7.5" fill="url(#brass)" stroke="#5A431F" strokeWidth="1" />
+            <circle cx="112" cy="112" r="3" fill="#D6CCBC" stroke="#8A6320" strokeWidth="0.8" />
+            {/* chain: alternating links climbing up-left */}
+            <g fill="none" stroke="url(#brass)" strokeWidth="3.2" strokeLinecap="round">
+              <ellipse cx="103" cy="103" rx="5.5" ry="3.2" transform="rotate(-45 103 103)" />
+              <ellipse cx="94" cy="94" rx="3.2" ry="5.5" transform="rotate(-45 94 94)" />
+              <ellipse cx="85" cy="85" rx="5.5" ry="3.2" transform="rotate(-45 85 85)" />
+              <ellipse cx="76" cy="76" rx="3.2" ry="5.5" transform="rotate(-45 76 76)" />
+              <ellipse cx="67" cy="67" rx="5.5" ry="3.2" transform="rotate(-45 67 67)" />
+            </g>
             {/* split ring */}
-            <circle cx="26" cy="26" r="18" fill="none" stroke="url(#brass)" strokeWidth="4" />
-            <circle cx="26" cy="26" r="18" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1" strokeDasharray="20 93" />
+            <circle cx="46" cy="46" r="20" fill="none" stroke="url(#brass)" strokeWidth="4.5" />
+            <circle cx="46" cy="46" r="20" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" strokeDasharray="30 200" />
+            <path d="M46 26 a20 20 0 0 1 14 6" fill="none" stroke="#5A431F" strokeWidth="1.2" />
           </svg>
         )}
 
