@@ -12,7 +12,7 @@ import {
 
 export type Order = {
   leather: string;
-  size: "full" | "passport";
+  size: "full" | "passport" | "keychain";
   roundedEdges: boolean;
   cord: string;
   charm: boolean;
@@ -80,7 +80,7 @@ export function validate(o: Order): Errors {
   if (o.stamp) {
     const t = o.stampText.trim();
     if (!t) e.stampText = "What should I stamp?";
-    else if (t.length > STAMP_MAX) e.stampText = `Up to ${STAMP_MAX} characters.`;
+    else if (t.length > STAMP_MAX) e.stampText = `Up to ${STAMP_MAX} letters.`;
     if (!STAMP_PLACEMENTS.some((p) => p.id === o.stampPlacement))
       e.stampPlacement = "Where should the stamp go?";
   }

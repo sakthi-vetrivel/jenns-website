@@ -196,7 +196,7 @@ Square by default. Radius hierarchy: `none` for the ticket, inputs, and photogra
 - **button-primary:** the only filled element on the site. One per screen. Label in the `label` style (uppercase, tracked). Hover darkens to `primary-hover`; focus-visible shows a 2px `primary` outline offset 3px; active shifts 1px down; disabled drops to 40% opacity and keeps its color. The label names the outcome: "Reserve my notebook," never "Submit."
 - **button-ghost:** text with a 1px `text` border, for the rare secondary action ("Start over"). Same states as primary with the border carrying the color.
 - **link:** `primary`, no underline at rest, underline on hover and focus. The hero link "Make yours →" is this component set in `body` size.
-- **input:** `surface` fill, 1px `rule` border, square, mono placeholder in `text-muted`. Focus swaps the border to `primary`. Error swaps it to `error` and adds a one-line mono message below. The stamp input shows a live character count in mono.
+- **input:** `surface` fill, 1px `rule` border, square, mono placeholder in `text-muted`. Focus swaps the border to `primary`. Error swaps it to `error` and adds a one-line mono message below. The stamp input shows a live count out of 3 in mono.
 - **swatch (leather):** a square photo crop, 64px on desktop, 56px on phone, 1px transparent border. Selected gets a 1px `primary` border with a 3px gap (outline-offset), so the ring floats off the photo. Changes snap; no crossfade.
 - **swatch (cord):** a 28px circle of the cord color, `full` radius, same selected ring. The one place a flat color is allowed as a swatch, because a cord is a flat color.
 - **ticket:** `surface` with a 1px `rule` border and 32px padding. Sections are numbered `01`, `02` in mono, titled in `label`, separated by hairlines. The ticket never scrolls inside itself; the page scrolls.
@@ -209,11 +209,11 @@ Square by default. Radius hierarchy: `none` for the ticket, inputs, and photogra
 The form asks exactly these, in this order. Each is a numbered section on the ticket.
 
 1. **01 Leather:** which color. Photo swatches: natural, cognac, mustard, cherry, burgundy, black (grow this list from the sheet).
-2. **02 Size:** Full size or Passport. Two text options with dimensions in mono under each.
+2. **02 Size:** Full size ($75), Passport ($50), or Keychain ($15). Text options with dimensions and price in mono under each.
 3. **03 Edges:** Rounded corners, yes or no. Two text options.
-4. **04 Cord:** which color. Round color dots.
-5. **05 Charm:** none, or yes, then where: on the spine or on the front, then a description of the charm and an optional photo of it. One of description or photo is required. The photo is downscaled in the browser and saved to Jenn's Drive by the sheet script; the sheet row gets the link. The where, description, and photo fields appear only after yes.
-6. **06 Stamp:** none, or yes, then the initials (short text input with a live count) and where (spine, front, or inside cover). Preview renders debossed.
+4. **04 Cord:** which color, no charge. Round color dots.
+5. **05 Charm (+$5):** none, or yes, then where: on the spine or on the front, then a description of the charm and an optional photo of it. One of description or photo is required. The photo is downscaled in the browser and saved to Jenn's Drive by the sheet script; the sheet row gets the link. The where, description, and photo fields appear only after yes.
+6. **06 Stamp (+$5):** none, or yes, then up to 3 letters (short text input with a live count) and where (spine, front, or inside cover). Preview renders debossed.
 7. **07 You:** name, email, phone. Delivery method: meet at Noe Valley Town Square, or an address for delivery. The address fields appear only when delivery is chosen.
 8. **08 Payment:** a statement, not a form. Total in mono, then: pay by Venmo to Jenn's handle after she confirms by hand within a day. The button reads "Reserve my notebook."
 
@@ -252,5 +252,6 @@ Every component designs its empty, loading, error, and long-content states. A ti
 | 2026-09-12 | Young Serif display, Source Serif 4 body, Courier Prime fenced to the ticket | Object-world faces: a stamp, a book, a receipt. Subagent proposed a grotesk body; overruled because the reference world is all-serif and "heirloom" reads better in a book face. |
 | 2026-09-12 | Home hero: mockup A approved; order page: mockup B approved | User: "A is really beautiful." Headline overlaps the photo edge; tag pinned bottom-right. |
 | 2026-09-12 | Page-turn animation on "Make yours" opens the order flow | User request. Replaces the stamp settle as the primary authored moment; stamp kept as secondary. |
+| 2026-09-12 | Prices from Jenn: full $75, passport $50, keychain $15, charm and stamp $5 each, cord free, stamp up to 3 letters | Jenn's message, 2026-09-12. Keychain added as a third size. |
 | 2026-09-12 | Charm section takes a description and an optional photo, stored in Drive | User request. Keeps every order artifact inside Jenn's Google account. |
 | 2026-09-12 | Order ticket fields fixed at eight numbered sections | User-supplied list: leather, size (full/passport), rounded edges, cord color, charm (spine/front), stamp (initials, where), contact + delivery (Noe Valley Town Square meetup or address), Venmo payment statement. |

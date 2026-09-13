@@ -38,5 +38,5 @@ in the Vercel project settings.
 ## Placeholders to replace
 
 - `public/images/*.jpg` are crops of the approved mockups, not real product photos.
-- Prices, cord colors, and the queue values live in `src/lib/catalog.ts`.
+- Cord colors, leather names, and the queue values live in `src/lib/catalog.ts`. Prices there are Jenn's (2026-09-12).
 - No email is sent yet; Jenn replies from the sheet. Wiring a confirmation email is a follow-up.

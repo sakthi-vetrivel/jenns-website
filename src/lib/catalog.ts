@@ -1,5 +1,5 @@
 /**
- * The catalog. Prices and options are placeholders until Jenn confirms them.
+ * The catalog. Prices confirmed by Jenn on 2026-09-12; cord color is free.
  * Leather swatches should become cropped macro photos (see DESIGN.md); the hex
  * tints are fallbacks for the preview only and are never UI chrome.
  */
@@ -24,11 +24,12 @@ export const LEATHERS: Leather[] = [
   { id: "burgundy", name: "Burgundy", tint: "#5E2A32", ages: "Goes almost black at the spine.", swatch: "/images/leather-burgundy.jpg" },
 ];
 
-export type Size = { id: "full" | "passport"; name: string; dims: string; price: number };
+export type Size = { id: "full" | "passport" | "keychain"; name: string; dims: string; price: number };
 
 export const SIZES: Size[] = [
-  { id: "full", name: "Full size", dims: "4.33 × 8.25 in", price: 148 },
-  { id: "passport", name: "Passport", dims: "3.5 × 5.5 in", price: 118 },
+  { id: "full", name: "Full size", dims: "4.33 × 8.25 in", price: 75 },
+  { id: "passport", name: "Passport", dims: "3.5 × 5.5 in", price: 50 },
+  { id: "keychain", name: "Keychain", dims: "Mini, clips to your keys", price: 15 },
 ];
 
 export type Cord = { id: string; name: string; color: string };
@@ -43,9 +44,9 @@ export const CORDS: Cord[] = [
   { id: "burgundy", name: "Burgundy", color: "#5E2A32" },
 ];
 
-export const CHARM_PRICE = 8;
-export const STAMP_PRICE = 10;
-export const STAMP_MAX = 14;
+export const CHARM_PRICE = 5;
+export const STAMP_PRICE = 5;
+export const STAMP_MAX = 3;
 
 export const CHARM_PLACEMENTS = [
   { id: "spine", name: "On the spine" },

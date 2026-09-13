@@ -4,12 +4,14 @@ import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 import {
   CHARM_PLACEMENTS,
+  CHARM_PRICE,
   CORDS,
   DELIVERY,
   LEATHERS,
   SIZES,
   STAMP_MAX,
   STAMP_PLACEMENTS,
+  STAMP_PRICE,
   VENMO_HANDLE,
 } from "@/lib/catalog";
 import { CHARM_IMAGE_MAX_BYTES, EMPTY_ORDER, priceOf, validate, type Errors, type Order } from "@/lib/order";
@@ -134,7 +136,7 @@ export default function OrderForm() {
           />
         </Section>
 
-        <Section n="04" title="Cord" error={errors.cord}>
+        <Section n="04" title="Cord" hint="Any color, no charge." error={errors.cord}>
           <div className="flex flex-wrap gap-4">
             {CORDS.map((c) => (
               <button
@@ -155,7 +157,7 @@ export default function OrderForm() {
         <Section
           n="05"
           title="Charm"
-          hint="A small stone or trinket on the cord. +$8."
+          hint={`A small stone or trinket on the cord. +$${CHARM_PRICE}.`}
           error={errors.charmPlacement || errors.charmDescription || errors.charmImage}
         >
           <Choice
@@ -208,7 +210,7 @@ export default function OrderForm() {
         <Section
           n="06"
           title="Stamp"
-          hint="Initials or a few words, pressed into the leather by hand. +$10."
+          hint={`Up to ${STAMP_MAX} letters, pressed into the leather by hand. +$${STAMP_PRICE}.`}
           error={errors.stampText || errors.stampPlacement}
         >
           <Choice
@@ -233,7 +235,7 @@ export default function OrderForm() {
                   className="input pr-16 uppercase tracking-[0.08em]"
                   value={order.stampText}
                   maxLength={STAMP_MAX}
-                  placeholder="e.g. MAKE IT COUNT"
+                  placeholder="e.g. JLH"
                   aria-invalid={!!errors.stampText}
                   onChange={(e) => set("stampText", e.target.value)}
                 />
@@ -351,14 +353,15 @@ function Preview({
   order: Order;
 }) {
   const passport = order.size === "passport";
+  const keychain = order.size === "keychain";
   const radius = order.roundedEdges ? 14 : 3;
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <div
         className="relative shadow-none transition-none"
         style={{
-          width: passport ? "38%" : "44%",
-          aspectRatio: passport ? "3.5 / 5.5" : "4.33 / 8.25",
+          width: keychain ? "22%" : passport ? "38%" : "44%",
+          aspectRatio: keychain ? "1 / 1.5" : passport ? "3.5 / 5.5" : "4.33 / 8.25",
           maxHeight: "100%",
           background: leather?.tint ?? "#C99C6B",
           borderRadius: radius,
