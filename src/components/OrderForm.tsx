@@ -365,13 +365,6 @@ export default function OrderForm() {
           </div>
         </Section>
 
-        <Section n="08" title="Payment">
-          <p className="max-w-prose">
-            Full payment up front, to <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo. Reserve
-            below; the next screen opens Venmo with the total and your order number as the memo.
-          </p>
-        </Section>
-
         {serverError && (
           <p className="t-mono text-oxblood mt-6" role="alert">
             {serverError.toUpperCase()} NOTHING WAS CHARGED.
@@ -380,12 +373,13 @@ export default function OrderForm() {
         </div>
       </div>
 
-      {/* Fixed total bar */}
-      <div className="fixed bottom-0 inset-x-0 lg:left-[46%] xl:left-[55%] lg:right-8 bg-paper border-t hairline px-5 md:px-8 xl:px-10 py-4 flex items-center justify-between gap-4 z-20">
-        <p key={total} className="t-mono tick">
-          TOTAL ${total}
-        </p>
-        <button type="submit" className="btn-primary" disabled={phase === "submitting"}>
+      {/* Fixed total bar: the one place to pay, so it is the loudest thing on the page */}
+      <div className="fixed bottom-0 inset-x-0 lg:left-[46%] xl:left-[55%] lg:right-8 bg-ink text-paper px-5 md:px-8 xl:px-10 py-5 flex items-center justify-between gap-6 z-20">
+        <div key={total} className="tick-paper">
+          <p className="t-label text-suede">Total</p>
+          <p className="t-heading">${total}</p>
+        </div>
+        <button type="submit" className="btn-inverse" disabled={phase === "submitting"}>
           {phase === "submitting" ? "Reserving…" : "Reserve & pay with Venmo"}
         </button>
       </div>

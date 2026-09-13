@@ -142,6 +142,27 @@ button:disabled {
   outline-offset: 3px;
 }
 
+/* Inverse button: paper on the ink bar */
+.btn-inverse {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 16px 32px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background-color 150ms ease-out, transform 50ms ease-out;
+}
+.btn-inverse:hover { background: var(--suede); }
+.btn-inverse:active { transform: translateY(1px); }
+.btn-inverse:disabled { opacity: 0.4; }
+.btn-inverse:focus-visible { outline-color: var(--paper); }
+
+@keyframes tick-paper { 0% { color: var(--suede); } 100% { color: var(--paper); } }
+.tick-paper { animation: tick-paper 150ms ease-out; }
+
 .btn-ghost {
   background: transparent;
   color: var(--ink);
