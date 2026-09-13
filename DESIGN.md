@@ -16,12 +16,16 @@ colors:
   success: "#4B6B4A"          # moss
   warning: "#A8772B"          # ochre
   error: "#8C2F2F"            # oxblood
-  leather-natural: "#C99C6B"  # tint fallbacks for the preview only; real swatches are photos
-  leather-cognac: "#B5622E"
-  leather-mustard: "#C9962E"
-  leather-cherry: "#A8202A"
-  leather-burgundy: "#5E2A32"
-  leather-black: "#1A1613"
+  leather-sand: "#E8C48E"     # tint fallbacks for the preview only; real swatches are photos
+  leather-ochre: "#D9A03C"
+  leather-saddle: "#B8733A"
+  leather-terracotta: "#C26A47"
+  leather-cherry: "#B4272F"
+  leather-chestnut: "#8A4E3A"
+  leather-plum: "#5E323A"
+  leather-green: "#3E7A55"
+  leather-forest: "#2F4A43"
+  leather-black: "#1A1816"
 typography:
   display:
     fontFamily: "'Libre Caslon Display', Georgia, serif"
@@ -65,8 +69,8 @@ spacing:
   lg: 24px
   xl: 32px
   2xl: 48px
-  3xl: 96px
-  4xl: 160px
+  section: 96px       # between sections (named to avoid shadowing Tailwind's max-w-3xl)
+  section-lg: 160px
 components:
   button-primary:
     backgroundColor: "{colors.primary}"
@@ -175,7 +179,7 @@ No exceptions were made to the overused list. EB Garamond was rejected because L
 
 ## Layout
 
-Creative-editorial. A 12-column grid on desktop that every composition breaks asymmetrically: 5/7 for the hero, 55/45 for the order page, 4/8 for text beside a photo. Max content width 1280px with 32px gutters on desktop, 24px on tablet, 20px on phone. Density is low: sections are padded 96px to 160px (`3xl` to `4xl`); the ticket interior uses 16px and 24px. Big step between sections, small step inside a ticket.
+Creative-editorial. A 12-column grid on desktop that every composition breaks asymmetrically: 5/7 for the hero, 55/45 for the order page, 4/8 for text beside a photo. Max content width 1280px with 32px gutters on desktop, 24px on tablet, 20px on phone. Density is low: sections are padded 96px to 160px (`section` to `section-lg`); the ticket interior uses 16px and 24px. Big step between sections, small step inside a ticket.
 
 - **Home hero:** two panels the full height of the viewport. The photograph owns the right 58%, full-bleed to the top, bottom, and right edges, hard shadow falling left. The left panel is the page: it holds the header (tracked wordmark "JENN" left, "Notebooks / Order" right, a hairline under both), the headline, the link, and the tag above a hairline at the bottom. No header spans the page on the home screen. The headline is two short lines, "Made by hand. / Made for you.", set lower-left; if a line ever runs past the panel it knocks out to paper over the photo. One link under it: "Make yours →". Bottom-right, pinned like a luggage tag, a mono block on `surface`: order number, leather, size, `MADE FOR ______`.
 - **Below the fold:** nothing. The cover ends with the hero. The leather ledger and the sizes live on /notebooks.
