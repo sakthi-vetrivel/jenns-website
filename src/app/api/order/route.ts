@@ -1,8 +1,39 @@
 import { NextResponse } from "next/server";
 import { toRow, validate, priceOf, type Order } from "@/lib/order";
 import { CHARM_IMAGE_MAX_BYTES } from "@/lib/order";
+import { diagnoseSheetResponse, snippet } from "@/lib/sheet";
 
 export const runtime = "nodejs";
+
+/**
+ * Health check: GET /api/order asks the Apps Script's doGet what it is and
+ * names the problem if Google answers with a page instead. No secrets in the
+ * reply. Open it in a browser after changing the deployment.
+ */
+export async function GET() {
+  const url = process.env.ORDERS_WEBHOOK_URL;
+  const secretSet = Boolean(process.env.ORDERS_WEBHOOK_SECRET);
+  if (!url) {
+    return NextResponse.json({ ok: false, webhook: "missing", secretSet, fix: "Set ORDERS_WEBHOOK_URL in Vercel." });
+  }
+  try {
+    const res = await fetch(url, { redirect: "follow", cache: "no-store" });
+    const text = await res.text();
+    const d = diagnoseSheetResponse(res.status, text);
+    return NextResponse.json({
+      ok: d.code === "ok",
+      webhook: url.endsWith("/exec") ? "exec" : url.includes("/dev") ? "dev (wrong: use the /exec URL)" : "set",
+      secretSet,
+      status: res.status,
+      code: d.code,
+      fix: d.fix || undefined,
+      scriptVersion: d.json?.version,
+      reply: d.json ?? snippet(text),
+    });
+  } catch (err) {
+    return NextResponse.json({ ok: false, webhook: "set", secretSet, code: "unreachable", fix: String(err) });
+  }
+}
 
 /**
  * Receives an order, validates it, and forwards a flat row to the Google Apps
@@ -55,24 +86,17 @@ export async function POST(req: Request) {
       cache: "no-store",
     });
     const text = await res.text();
-    let ok = res.ok;
-    let orderNumber = "";
-    try {
-      const parsed = JSON.parse(text) as { ok?: boolean; orderNumber?: string };
-      ok = ok && parsed.ok !== false;
-      orderNumber = typeof parsed.orderNumber === "string" ? parsed.orderNumber : "";
-    } catch {
-      ok = false;
-    }
-    if (!ok || !orderNumber) {
-      console.error("[order] sheet rejected row:", res.status, text.slice(0, 300));
-      // Google answers with an HTML sign-in / access page when the Apps Script web app
-      // isn't deployed with "Who has access: Anyone". Say so, instead of "try again".
-      const accessWall = res.status === 401 || res.status === 403 || /Access Denied|need access/i.test(text);
-      const msg = accessWall
-        ? "The order sheet isn't accepting orders yet (the Apps Script must be deployed with access set to Anyone)."
-        : "Couldn't save your order. Try again in a minute.";
-      return NextResponse.json({ error: msg }, { status: 502 });
+    const d = diagnoseSheetResponse(res.status, text);
+    const orderNumber = d.json?.orderNumber;
+    if (d.code !== "ok" || typeof orderNumber !== "string" || !orderNumber) {
+      console.error("[order] sheet rejected row:", res.status, d.code, snippet(text));
+      // Google answers with a page, not JSON, for every misconfiguration; d.fix names it.
+      // The customer sees the short line; GET /api/order shows the full diagnosis.
+      const msg =
+        d.code === "unknown" || d.code === "html"
+          ? "Couldn't save your order. Try again in a minute."
+          : "The order sheet isn't accepting orders yet.";
+      return NextResponse.json({ error: msg, code: d.code, fix: d.fix }, { status: 502 });
     }
     return NextResponse.json({ orderNumber, stored: true });
   } catch (err) {

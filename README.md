@@ -31,6 +31,14 @@ set the `ORDER_START` script property to begin somewhere else. A charm photo,
 when attached, is saved to a Drive folder named "Notebook orders - charm
 photos" and its link goes in the `charmPhoto` column.
 Set `ORDERS_WEBHOOK_URL` and `ORDERS_WEBHOOK_SECRET` in Vercel.
+
+**Is it working?** Open `/api/order` in a browser (GET). It pings the script
+and answers `{"ok":true,"scriptVersion":2,...}` when everything is wired, or
+names the problem (`not-public`, `not-authorized`, `not-deployed`,
+`bad-secret`, `old-script`) with a one-line fix. The usual one: the
+deployment's "Who has access" is not "Anyone", so Google answers with a
+sign-in page. Every edit to `Code.gs` needs Deploy → Manage deployments →
+edit → New version, or the `/exec` URL keeps running the old code.
 With no URL set, the row is logged to the server console and the customer
 sees the do-it-by-hand receipt (screenshot, email Jenn, pay on Venmo)
 instead of a confirmation.

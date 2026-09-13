@@ -24,6 +24,21 @@ var HEADERS = [
 
 var PHOTO_FOLDER = "Notebook orders - charm photos";
 
+/** Bump when doPost's contract changes; the site's health check reads it. */
+var VERSION = 2;
+
+/**
+ * Health check. Opening the /exec URL in a browser should show {"ok":true,...}.
+ * A Google sign-in page instead means the deployment isn't set to "Anyone".
+ * Also run this once from the editor (Run → doGet) to grant the Sheets and
+ * Drive permissions before the first order.
+ */
+function doGet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Orders")
+    || SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  return respond({ ok: true, version: VERSION, sheet: sheet.getName(), orders: Math.max(0, sheet.getLastRow() - 1) });
+}
+
 function doPost(e) {
   // One order at a time, so two customers can't be handed the same number.
   var lock = LockService.getScriptLock();
