@@ -68,7 +68,7 @@ export default function OrderForm() {
     }
     if (ORDER_MODE === "email") {
       // No server: hand the order to the customer's mail app, then show the ticket
-      // with the same email and Venmo buttons in case the app didn't open.
+      // with the Venmo button and a link to reopen the email in case the app didn't.
       setPhase("emailed");
       window.scrollTo({ top: 0 });
       window.location.href = receiptMailto(CONTACT.email, order, total);
@@ -823,25 +823,34 @@ function EmailReceipt({ order, total, mode = "fallback" }: { order: Order; total
       <p className="mt-4 max-w-prose">
         {mode === "primary"
           ? "Your mail app should have opened with this order filled in, addressed to me. Send it"
-          : "My order sheet isn\u2019t answering, so let\u2019s do this by hand. Screenshot these order details and send them to "}
-        {mode === "fallback" && <span className="t-mono">{CONTACT.email}</span>}
-        {order.charm && order.charmImage ? " along with your charm photo" : ""}, then send{" "}
-        <span className="t-mono">${total}</span> to <span className="t-mono">@{VENMO_HANDLE}</span> on
-        Venmo with <span className="t-mono">{memo}</span> as the memo. I&rsquo;ll confirm within a day and
-        start cutting.
+          : `My order sheet isn\u2019t answering, so let\u2019s do this by hand. Screenshot these order details and send them to ${CONTACT.email}`}
+        {order.charm && order.charmImage ? " along with your charm photo" : ""}, then send ${total} to @{VENMO_HANDLE} on
+        Venmo with &ldquo;{memo}&rdquo; as the memo. I&rsquo;ll confirm within a day and start cutting.
       </p>
-      <div className="flex flex-wrap gap-3 mt-5">
-        <a href={mailto} className="btn-primary inline-block">
-          Email these details to Jenn
-        </a>
-        <a href={venmo} className="btn-primary inline-block" target="_blank" rel="noopener">
-          Pay ${total} to @{VENMO_HANDLE} on Venmo
-        </a>
-      </div>
-      <p className="t-mono text-graphite mt-3">
-        {mode === "primary" ? "MAIL DIDN\u2019T OPEN? THE EMAIL BUTTON TRIES AGAIN, OR WRITE TO " : "THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED. "}
-        {mode === "primary" && <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>}
-      </p>
+      {/* One primary button per view: the step the customer still has to take. */}
+      {mode === "primary" ? (
+        <>
+          <a href={venmo} className="btn-primary inline-block mt-5" target="_blank" rel="noopener">
+            Pay ${total} to @{VENMO_HANDLE} on Venmo
+          </a>
+          <p className="t-mono text-graphite mt-3">
+            MAIL DIDN&rsquo;T OPEN?{" "}
+            <a href={mailto} className="link">OPEN THE EMAIL AGAIN</a>
+            {" "}OR WRITE TO{" "}
+            <a href={`mailto:${CONTACT.email}`} className="link">{CONTACT.email.toUpperCase()}</a>
+          </p>
+        </>
+      ) : (
+        <>
+          <a href={mailto} className="btn-primary inline-block mt-5">
+            Email these details to Jenn
+          </a>
+          <p className="t-mono text-graphite mt-3">
+            THE EMAIL BUTTON FILLS EVERYTHING IN FOR YOU. NO SCREENSHOT NEEDED. THEN{" "}
+            <a href={venmo} className="link" target="_blank" rel="noopener">PAY ${total} ON VENMO</a>
+          </p>
+        </>
+      )}
     </div>
   );
 }
