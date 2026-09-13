@@ -521,7 +521,7 @@ function Preview({
             </defs>
             {/* grommet set into the spine edge */}
             <circle cx="112" cy="112" r="7.5" fill="url(#brass)" stroke="#5A431F" strokeWidth="1" />
-            <circle cx="112" cy="112" r="3" fill="#D6CCBC" stroke="#8A6320" strokeWidth="0.8" />
+            <circle cx="112" cy="112" r="3" fill="var(--suede)" stroke="#8A6320" strokeWidth="0.8" />
             {/* chain: alternating links climbing up-left */}
             <g fill="none" stroke="url(#brass)" strokeWidth="3.2" strokeLinecap="round">
               <ellipse cx="103" cy="103" rx="5.5" ry="3.2" transform="rotate(-45 103 103)" />
