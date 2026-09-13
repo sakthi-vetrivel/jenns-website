@@ -680,10 +680,11 @@ function Section({
     >
       <p className="t-mono pt-1">{n}</p>
       <div>
-        <h2 id={`s-${n}`} className="t-label mb-5">
+        <h2 id={`s-${n}`} className="t-label">
           {title}
-          {hint && <span className="ml-3 normal-case tracking-normal text-graphite font-normal">{hint}</span>}
         </h2>
+        {hint && <p className="t-mono text-graphite mt-1 mb-5">{hint.toUpperCase()}</p>}
+        {!hint && <div className="mb-5" />}
         {children}
         {error && (
           <p className="t-mono text-oxblood mt-4" role="alert">
