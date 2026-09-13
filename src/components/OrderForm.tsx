@@ -434,12 +434,12 @@ function Preview({
               }}
             />
           )}
-          {order.charm && (
+          {order.charm && order.charmPlacement !== "spine" && (
             <div
               className="absolute rounded-full"
               style={{
                 top: "calc(50% - 9px)",
-                left: order.charmPlacement === "spine" ? "6%" : "46%",
+                left: "46%",
                 width: 20,
                 height: 20,
                 background: "radial-gradient(circle at 35% 35%, #F4EFE6, #C9C0B2)",
@@ -463,6 +463,43 @@ function Preview({
             </p>
           )}
         </div>
+
+        {/* Spine charm: a small loop at the top of the spine, a short chain, and the stone
+            dangling off the top-left corner. Sits lower on a keychain so it clears the ring. */}
+        {order.charm && order.charmPlacement === "spine" && (
+          <svg
+            aria-hidden
+            viewBox="0 0 100 100"
+            className="absolute overflow-visible"
+            style={{ width: "40%", left: "-30%", top: size.id === "keychain" ? "6%" : "-14%" }}
+          >
+            <defs>
+              <linearGradient id="charm-gold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#E2C990" />
+                <stop offset="0.5" stopColor="#B08D57" />
+                <stop offset="1" stopColor="#6F532B" />
+              </linearGradient>
+              <radialGradient id="charm-stone" cx="0.35" cy="0.35" r="0.7">
+                <stop offset="0" stopColor="#FBF7F0" />
+                <stop offset="0.6" stopColor="#E3D9CB" />
+                <stop offset="1" stopColor="#B9AD9C" />
+              </radialGradient>
+            </defs>
+            {/* jump ring on the spine edge */}
+            <circle cx="80" cy="72" r="4" fill="none" stroke="url(#charm-gold)" strokeWidth="2" />
+            {/* fine chain out from the corner */}
+            <g fill="none" stroke="url(#charm-gold)" strokeWidth="1.8" strokeLinecap="round">
+              <ellipse cx="72" cy="64" rx="3.4" ry="2" transform="rotate(-45 72 64)" />
+              <ellipse cx="65" cy="57" rx="2" ry="3.4" transform="rotate(-45 65 57)" />
+              <ellipse cx="58" cy="50" rx="3.4" ry="2" transform="rotate(-45 58 50)" />
+              <ellipse cx="51" cy="43" rx="2" ry="3.4" transform="rotate(-45 51 43)" />
+            </g>
+            {/* bezel and stone */}
+            <circle cx="40" cy="32" r="11" fill="url(#charm-gold)" />
+            <circle cx="40" cy="32" r="8.5" fill="url(#charm-stone)" />
+            <circle cx="40" cy="32" r="11" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="0.6" />
+          </svg>
+        )}
 
         {/* Keychain: a brass grommet on the spine, a short chain, and a split ring. */}
         {size.id === "keychain" && (

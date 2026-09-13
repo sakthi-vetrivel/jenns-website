@@ -12,8 +12,6 @@ const HEADLINE = (
     Made by hand.
     <br />
     Made for you.
-    <br />
-    Made to outlast you.
   </>
 );
 
