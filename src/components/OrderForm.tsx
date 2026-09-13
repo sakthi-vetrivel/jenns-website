@@ -46,8 +46,11 @@ export default function OrderForm() {
     const errs = validate(order);
     setErrors(errs);
     if (Object.keys(errs).length) {
-      const first = document.querySelector<HTMLElement>("[data-error]");
-      first?.scrollIntoView({ block: "center", behavior: "smooth" });
+      // The error markup renders on the next frame; scroll after React commits it.
+      requestAnimationFrame(() => {
+        const first = document.querySelector<HTMLElement>("[data-error]");
+        first?.scrollIntoView({ block: "center", behavior: "smooth" });
+      });
       return;
     }
     setPhase("submitting");
