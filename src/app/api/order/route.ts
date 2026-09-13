@@ -62,7 +62,13 @@ export async function POST(req: Request) {
     }
     if (!ok) {
       console.error("[order] sheet rejected row:", res.status, text.slice(0, 300));
-      return NextResponse.json({ error: "Couldn't save your order. Try again in a minute." }, { status: 502 });
+      // Google answers with an HTML sign-in / access page when the Apps Script web app
+      // isn't deployed with "Who has access: Anyone". Say so, instead of "try again".
+      const accessWall = res.status === 401 || res.status === 403 || /Access Denied|need access/i.test(text);
+      const msg = accessWall
+        ? "The order sheet isn't accepting orders yet (the Apps Script must be deployed with access set to Anyone)."
+        : "Couldn't save your order. Try again in a minute.";
+      return NextResponse.json({ error: msg }, { status: 502 });
     }
   } catch (err) {
     console.error("[order] sheet unreachable:", err);
