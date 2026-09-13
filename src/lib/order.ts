@@ -33,7 +33,7 @@ export type Order = {
 };
 
 export const EMPTY_ORDER: Order = {
-  leather: "",
+  leather: "chestnut",
   size: "full",
   roundedEdges: false,
   cord: "",
