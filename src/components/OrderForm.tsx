@@ -360,9 +360,9 @@ export default function OrderForm() {
 
         <Section n="08" title="Payment">
           <p className="max-w-prose">
-            Pay <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo. Reserve first: that gives your
-            order a number, and the Venmo button that follows carries it as the memo so Jenn can match
-            the payment to your notebook.
+            Full payment up front, to <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo. Reserve
+            first: that gives your order a number, and the Venmo button that follows carries the total
+            and the number as the memo so Jenn can match the payment to your notebook.
           </p>
           <button type="submit" className="btn-primary mt-6" disabled={phase === "submitting"}>
             {phase === "submitting" ? "Reserving…" : `Reserve & pay $${total} with Venmo`}
@@ -403,7 +403,7 @@ function Preview({
   const size = SIZES.find((sz) => sz.id === order.size) ?? SIZES[0];
   const full = SIZES[0];
   // Height relative to the stage so the three sizes read at true relative scale.
-  const heightPct = Math.round((size.height / full.height) * 78);
+  const heightPct = Math.max(44, Math.round((size.height / full.height) * 78));
   const radius = order.roundedEdges ? "4% / 2.6%" : "0.6% / 0.4%";
   const src = leather?.preview ?? "/images/cover-sand.webp";
   return (
@@ -463,6 +463,29 @@ function Preview({
             </p>
           )}
         </div>
+
+        {/* Keychain: a brass split ring through the top-left corner. */}
+        {size.id === "keychain" && (
+          <svg
+            aria-hidden
+            viewBox="0 0 64 64"
+            className="absolute"
+            style={{ width: "34%", left: "-22%", top: "-16%", transform: "rotate(-35deg)" }}
+          >
+            <defs>
+              <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#D9BE84" />
+                <stop offset="0.5" stopColor="#B08D57" />
+                <stop offset="1" stopColor="#6F532B" />
+              </linearGradient>
+            </defs>
+            {/* connector loop sitting in the corner */}
+            <ellipse cx="47" cy="47" rx="6" ry="9" fill="none" stroke="url(#brass)" strokeWidth="3.2" transform="rotate(45 47 47)" />
+            {/* split ring */}
+            <circle cx="26" cy="26" r="18" fill="none" stroke="url(#brass)" strokeWidth="4" />
+            <circle cx="26" cy="26" r="18" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1" strokeDasharray="20 93" />
+          </svg>
+        )}
 
         {/* Dimension lines: width below, height to the right. */}
         <div className="absolute left-0 right-0 -bottom-9 flex flex-col items-center" aria-hidden>
@@ -749,13 +772,13 @@ function Confirmation({ order, orderNumber, total }: { order: Order; orderNumber
           <p className="mt-8 max-w-prose">
             {kiosk ? (
               <>
-                Scan the code to pay <span className="t-mono">@{VENMO_HANDLE}</span> on Venmo, or pay
-                later once Jenn confirms. Either way she&rsquo;ll write to you within a day.
+                Scan the code to pay <span className="t-mono">@{VENMO_HANDLE}</span> the full amount on
+                Venmo. Jenn will confirm within a day and start cutting.
               </>
             ) : (
               <>
-                Your notebook is reserved. The button opens Venmo with the amount and your order number
-                filled in as the memo. I&rsquo;ll confirm by hand within a day and start cutting.
+                Your notebook is reserved. The button opens Venmo with the full amount and your order
+                number as the memo. Once it lands, I&rsquo;ll confirm within a day and start cutting.
               </>
             )}
           </p>
