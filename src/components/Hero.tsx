@@ -52,7 +52,7 @@ export default function Hero() {
               {HEADLINE}
             </h1>
           </div>
-          <a href="/order" onClick={makeYours} className="link inline-block mt-10 text-[1.25rem] w-max">
+          <a href="/order" onClick={makeYours} className="link inline-flex items-center min-h-11 mt-8 text-[1.25rem] w-max">
             Make yours&nbsp;→
           </a>
         </div>

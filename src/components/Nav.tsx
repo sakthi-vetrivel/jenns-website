@@ -22,7 +22,7 @@ export default function Nav({ inset = false }: { inset?: boolean }) {
           : "flex items-center justify-between px-5 md:px-8 pt-8 pb-4"
       }
     >
-      <Link href="/" className="t-wordmark text-ink" aria-label="Jenn, home">
+      <Link href="/" className="t-wordmark text-ink inline-flex items-center min-h-11" aria-label="Jenn, home">
         JENN
       </Link>
       <nav aria-label="Primary" className="flex items-center gap-3">
@@ -34,7 +34,7 @@ export default function Nav({ inset = false }: { inset?: boolean }) {
               <Link
                 href={l.href}
                 aria-current={current ? "page" : undefined}
-                className={`text-ink ${current ? "underline underline-offset-4 decoration-1" : ""}`}
+                className={`text-ink inline-flex items-center min-h-11 px-1 ${current ? "underline underline-offset-4 decoration-1" : ""}`}
               >
                 {l.label}
               </Link>
