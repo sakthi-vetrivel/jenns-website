@@ -171,7 +171,7 @@ Type comes from the object's world: a notebook, a brass stamp, a receipt.
 - **Source Serif 4** is body and label. A modern book face with optical sizes, so it holds up at 17px on a phone and at 12px tracked uppercase for labels. Labels are the Dôen and Louise Carmen convention: tiny, uppercase, tracked 0.08em. Use weight 500 for labels and 400 for reading; do not use 600 or 700.
 - **Courier Prime** is the mono, and it is fenced. It appears only where the site behaves like a receipt: order numbers, prices, the live queue, the luggage-tag block on the hero, section numbers on the ticket, the running total, and the confirmation. If Courier appears in a headline, a nav item, or a paragraph, that is a bug. A typewriter face reads cheap the moment it leaks.
 
-Loading: Google Fonts, one `<link>` with `display=swap`, families `Libre+Caslon+Display`, `Source+Serif+4:opsz,wght@8..60,400;8..60,500`, `Courier+Prime:wght@400;700`. Preconnect to fonts.gstatic.com. Fallback stack is Georgia so a slow load still reads as a book.
+Loading: Google Fonts, one `<link>` with `display=swap`, families `Libre+Caslon+Display`, `Source+Serif+4:opsz,wght@8..60,400;8..60,500`, `Courier+Prime`. Preconnect to fonts.gstatic.com. Fallback stack is Georgia so a slow load still reads as a book.
 
 Scale: display is a `clamp` from 36px on a phone to 100px on desktop; heading from 28px to 48px; body 17px; label 12px; mono 13px. Levels differ by more than a weight. Nothing sits within a step of body size.
 

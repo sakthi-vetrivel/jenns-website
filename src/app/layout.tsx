@@ -19,7 +19,7 @@ const sourceSerif = Source_Serif_4({
 });
 
 const courierPrime = Courier_Prime({
-  weight: ["400", "700"],
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-courier-prime",
   display: "swap",
